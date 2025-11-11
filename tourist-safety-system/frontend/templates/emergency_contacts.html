@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emergency Contacts - Tourist Safety System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='common.css') }}">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            color: #2d3436;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #636e72;
+            margin-bottom: 30px;
+        }
+
+        .add-contact-btn {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1em;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-bottom: 30px;
+            transition: transform 0.2s;
+        }
+
+        .add-contact-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(17, 153, 142, 0.4);
+        }
+
+        .contacts-grid {
+            display: grid;
+            gap: 20px;
+        }
+
+        .contact-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            border-left: 5px solid #667eea;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .contact-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .contact-card.primary {
+            border-left-color: #feca57;
+            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+        }
+
+        .primary-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #feca57;
+            color: #2d3436;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+        }
+
+        .contact-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .contact-icon {
+            font-size: 3em;
+            margin-right: 20px;
+        }
+
+        .contact-name {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #2d3436;
+        }
+
+        .contact-relationship {
+            color: #636e72;
+            font-size: 1em;
+        }
+
+        .contact-details {
+            margin: 15px 0;
+        }
+
+        .contact-detail {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            color: #2d3436;
+        }
+
+        .detail-icon {
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+
+        .contact-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .btn-edit {
+            background: #74b9ff;
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background: #0984e3;
+        }
+
+        .btn-delete {
+            background: #ff7675;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #d63031;
+        }
+
+        .btn-primary {
+            background: #feca57;
+            color: #2d3436;
+        }
+
+        .btn-primary:hover {
+            background: #fdcb6e;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            font-size: 2em;
+            font-weight: bold;
+            color: #2d3436;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            color: #2d3436;
+            margin-bottom: 8px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #dfe6e9;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+        }
+
+        .checkbox-group input {
+            width: auto;
+            margin-right: 10px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        .btn-save {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            flex: 1;
+        }
+
+        .btn-cancel {
+            background: #95a5a6;
+            color: white;
+            flex: 1;
+        }
+
+        .btn-cancel:hover {
+            background: #7f8c8d;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #636e72;
+        }
+
+        .empty-state-icon {
+            font-size: 5em;
+            margin-bottom: 20px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+
+        .back-link:hover {
+            color: #764ba2;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            z-index: 2000;
+            display: none;
+            animation: slideIn 0.3s;
+        }
+
+        .notification.success {
+            border-left: 5px solid #00b894;
+        }
+
+        .notification.error {
+            border-left: 5px solid #d63031;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/dashboard" class="back-link">← Back to Dashboard</a>
+        
+        <h1>👥 Emergency Contacts</h1>
+        <p class="subtitle">Manage the people who will be notified during emergencies</p>
+
+        <button class="add-contact-btn" onclick="openAddModal()">
+            ➕ Add Emergency Contact
+        </button>
+
+        <div id="contactsGrid" class="contacts-grid">
+            <!-- Contacts will be loaded here -->
+        </div>
+
+        <div id="emptyState" class="empty-state" style="display: none;">
+            <div class="empty-state-icon">📭</div>
+            <h2>No Emergency Contacts Yet</h2>
+            <p>Add trusted people who will be notified when you trigger an SOS alert</p>
+        </div>
+    </div>
+
+    <!-- Add/Edit Contact Modal -->
+    <div id="contactModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header" id="modalTitle">Add Emergency Contact</div>
+            
+            <form id="contactForm">
+                <input type="hidden" id="contactId">
+                
+                <div class="form-group">
+                    <label for="contactName">Full Name *</label>
+                    <input type="text" id="contactName" required placeholder="e.g., John Smith">
+                </div>
+
+                <div class="form-group">
+                    <label for="contactRelationship">Relationship *</label>
+                    <select id="contactRelationship" required>
+                        <option value="">-- Select Relationship --</option>
+                        <option value="spouse">Spouse</option>
+                        <option value="parent">Parent</option>
+                        <option value="sibling">Sibling</option>
+                        <option value="child">Child</option>
+                        <option value="friend">Friend</option>
+                        <option value="colleague">Colleague</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="contactPhone">Phone Number *</label>
+                    <input type="tel" id="contactPhone" required placeholder="+1 234-567-8900">
+                </div>
+
+                <div class="form-group">
+                    <label for="contactEmail">Email (Optional)</label>
+                    <input type="email" id="contactEmail" placeholder="john@example.com">
+                </div>
+
+                <div class="form-group checkbox-group">
+                    <input type="checkbox" id="contactPrimary">
+                    <label for="contactPrimary">Set as Primary Contact (first to be notified)</label>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="submit" class="btn btn-save">💾 Save Contact</button>
+                    <button type="button" class="btn btn-cancel" onclick="closeModal()">✖ Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div id="notification" class="notification"></div>
+
+    <script>
+        let editingContactId = null;
+
+        // Load contacts on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadContacts();
+        });
+
+        async function loadContacts() {
+            try {
+                const response = await fetch('/api/contacts/list');
+                const data = await response.json();
+
+                if (data.success) {
+                    displayContacts(data.contacts);
+                } else {
+                    showNotification('Error loading contacts: ' + data.error, 'error');
+                }
+            } catch (error) {
+                showNotification('Network error: ' + error.message, 'error');
+            }
+        }
+
+        function displayContacts(contacts) {
+            const grid = document.getElementById('contactsGrid');
+            const emptyState = document.getElementById('emptyState');
+
+            if (contacts.length === 0) {
+                grid.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            grid.style.display = 'grid';
+            emptyState.style.display = 'none';
+
+            // Sort: primary first
+            contacts.sort((a, b) => (b.is_primary ? 1 : 0) - (a.is_primary ? 1 : 0));
+
+            grid.innerHTML = contacts.map(contact => `
+                <div class="contact-card ${contact.is_primary ? 'primary' : ''}">
+                    ${contact.is_primary ? '<div class="primary-badge">⭐ PRIMARY</div>' : ''}
+                    
+                    <div class="contact-header">
+                        <div class="contact-icon">👤</div>
+                        <div>
+                            <div class="contact-name">${escapeHtml(contact.name)}</div>
+                            <div class="contact-relationship">${escapeHtml(contact.relationship)}</div>
+                        </div>
+                    </div>
+
+                    <div class="contact-details">
+                        <div class="contact-detail">
+                            <span class="detail-icon">📞</span>
+                            <span>${escapeHtml(contact.phone)}</span>
+                        </div>
+                        ${contact.email ? `
+                            <div class="contact-detail">
+                                <span class="detail-icon">📧</span>
+                                <span>${escapeHtml(contact.email)}</span>
+                            </div>
+                        ` : ''}
+                    </div>
+
+                    <div class="contact-actions">
+                        <button class="btn btn-edit" onclick="editContact('${contact.contact_id}')">✏️ Edit</button>
+                        ${!contact.is_primary ? `
+                            <button class="btn btn-primary" onclick="setPrimary('${contact.contact_id}')">⭐ Set Primary</button>
+                        ` : ''}
+                        <button class="btn btn-delete" onclick="deleteContact('${contact.contact_id}', '${escapeHtml(contact.name)}')">🗑️ Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openAddModal() {
+            editingContactId = null;
+            document.getElementById('modalTitle').textContent = 'Add Emergency Contact';
+            document.getElementById('contactForm').reset();
+            document.getElementById('contactId').value = '';
+            document.getElementById('contactModal').classList.add('active');
+        }
+
+        async function editContact(contactId) {
+            // Load contact data
+            const response = await fetch('/api/contacts/list');
+            const data = await response.json();
+            
+            if (data.success) {
+                const contact = data.contacts.find(c => c.contact_id === contactId);
+                
+                if (contact) {
+                    editingContactId = contactId;
+                    document.getElementById('modalTitle').textContent = 'Edit Emergency Contact';
+                    document.getElementById('contactId').value = contactId;
+                    document.getElementById('contactName').value = contact.name;
+                    document.getElementById('contactRelationship').value = contact.relationship;
+                    document.getElementById('contactPhone').value = contact.phone;
+                    document.getElementById('contactEmail').value = contact.email || '';
+                    document.getElementById('contactPrimary').checked = contact.is_primary;
+                    document.getElementById('contactModal').classList.add('active');
+                }
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('contactModal').classList.remove('active');
+            editingContactId = null;
+        }
+
+        document.getElementById('contactForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const contactData = {
+                name: document.getElementById('contactName').value,
+                relationship: document.getElementById('contactRelationship').value,
+                phone: document.getElementById('contactPhone').value,
+                email: document.getElementById('contactEmail').value,
+                is_primary: document.getElementById('contactPrimary').checked
+            };
+
+            try {
+                let url, method;
+                if (editingContactId) {
+                    url = `/api/contacts/edit/${editingContactId}`;
+                    method = 'PUT';
+                } else {
+                    url = '/api/contacts/add';
+                    method = 'POST';
+                }
+
+                const response = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(contactData)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showNotification(data.message, 'success');
+                    closeModal();
+                    loadContacts();
+                } else {
+                    showNotification('Error: ' + data.error, 'error');
+                }
+            } catch (error) {
+                showNotification('Network error: ' + error.message, 'error');
+            }
+        });
+
+        async function setPrimary(contactId) {
+            if (!confirm('Set this contact as your primary emergency contact?')) return;
+
+            try {
+                const response = await fetch(`/api/contacts/set-primary/${contactId}`, {
+                    method: 'PUT'
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showNotification(data.message, 'success');
+                    loadContacts();
+                } else {
+                    showNotification('Error: ' + data.error, 'error');
+                }
+            } catch (error) {
+                showNotification('Network error: ' + error.message, 'error');
+            }
+        }
+
+        async function deleteContact(contactId, contactName) {
+            if (!confirm(`Delete emergency contact "${contactName}"?`)) return;
+
+            try {
+                const response = await fetch(`/api/contacts/delete/${contactId}`, {
+                    method: 'DELETE'
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showNotification(data.message, 'success');
+                    loadContacts();
+                } else {
+                    showNotification('Error: ' + data.error, 'error');
+                }
+            } catch (error) {
+                showNotification('Network error: ' + error.message, 'error');
+            }
+        }
+
+        function showNotification(message, type) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.style.display = 'block';
+
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 4000);
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('contactModal').addEventListener('click', (e) => {
+            if (e.target.id === 'contactModal') {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,48 @@
+{
+    "include": [
+        "."
+    ],
+    "exclude": [
+        "**/node_modules",
+        "**/__pycache__",
+        "**/.*"
+    ],
+    "extraPaths": [
+        "./backend"
+    ],
+    "pythonVersion": "3.11",
+    "typeCheckingMode": "off",
+    "useLibraryCodeForTypes": true,
+    "reportMissingImports": "none",
+    "reportMissingTypeStubs": "none",
+    "reportImportCycles": "none",
+    "reportUnusedImport": "none",
+    "reportUnusedVariable": "none",
+    "reportUnknownParameterType": "none",
+    "reportUnknownArgumentType": "none",
+    "reportUnknownVariableType": "none",
+    "reportUnknownMemberType": "none",
+    "reportMissingParameterType": "none",
+    "reportUnnecessaryIsInstance": "none",
+    "reportUnnecessaryComparison": "none",
+    "reportUnnecessaryCast": "none",
+    "reportGeneralTypeIssues": "none",
+    "reportOptionalMemberAccess": "none",
+    "reportOptionalSubscript": "none",
+    "reportPrivateImportUsage": "none",
+    "reportUnboundVariable": "none",
+    "reportPossiblyUnbound": "none",
+    "reportConstantRedefinition": "none",
+    "reportDeprecated": "none",
+    "reportIncompatibleMethodOverride": "none",
+    "reportIncompatibleVariableOverride": "none",
+    "reportInconsistentConstructor": "none",
+    "reportOverlappingOverload": "none",
+    "reportUntypedBaseClass": "none",
+    "reportUntypedClassDecorator": "none",
+    "reportUntypedFunctionDecorator": "none",
+    "reportUntypedNamedTuple": "none",
+    "reportCallInDefaultInitializer": "none",
+    "reportUnnecessaryTypeIgnoreComment": "none",
+    "reportMatchNotExhaustive": "none"
+}

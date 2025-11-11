@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="{{ current_language or 'en' }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-translate="tourist_login_title">Tourist Login - Tourist Safety System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='common.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Fixed Header for Login Pages */
+        .fixed-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #ffffff;
+            z-index: 1000;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+            height: 70px;
+            border-bottom: 2px solid #f8f9fa;
+        }
+        
+        .fixed-header .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            height: 100%;
+        }
+        
+        .header-left {
+            flex: 1;
+            display: flex;
+            justify-content: flex-start;
+        }
+        
+        .fixed-header .logo {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #007bff;
+        }
+        
+        .header-right {
+            flex: 1;
+            display: flex;
+            justify-content: flex-end;
+        }
+        
+        .language-selection-bar { display:flex; gap:10px; align-items:center; }
+        .lang-btn { padding:8px 14px; border:2px solid #007bff; border-radius:10px; background:#fff; color:#007bff; font-weight:600; cursor:pointer; transition:all .2s ease; }
+        .lang-btn:hover{ background:#007bff; color:#fff; }
+        .lang-btn.active{ background:#007bff; color:#fff; box-shadow:0 4px 12px rgba(0,123,255,.25); }
+        
+        .sos-btn {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+        }
+        
+        .sos-btn:hover {
+            background: linear-gradient(135deg, #c82333, #a71e2a);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+        }
+        
+        .sos-btn:active {
+            transform: translateY(0);
+        }
+        
+        .sos-btn i {
+            font-size: 1.2em;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ffc107;
+            color: #000;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7em;
+            font-weight: bold;
+            animation: bounce 1s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+        
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .fixed-header .header-content {
+                padding: 8px 15px;
+            }
+            
+            .language-selector-header {
+                min-width: 120px;
+                font-size: 0.8em;
+                padding: 6px 10px;
+            }
+            
+            .sos-btn {
+                padding: 8px 15px;
+                font-size: 0.8em;
+            }
+            
+            .sos-btn span:not(.notification-badge) {
+                display: none;
+            }
+            
+            .fixed-header .logo {
+                font-size: 1.2em;
+            }
+        }
+        
+        /* Login Container with proper spacing */
+        body {
+            padding-top: 90px; /* Space for fixed header */
+        }
+        
+        .login-container {
+            max-width: 500px;
+            margin: 50px auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        .login-header {
+            margin-bottom: 30px;
+        }
+        
+        .login-header i {
+            font-size: 4em;
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+        
+        .login-header h1 {
+            color: #495057;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+        
+        .login-header p {
+            color: #6c757d;
+            font-size: 1.1em;
+        }
+        
+        .login-form {
+            margin: 30px 0;
+        }
+        
+        .input-group {
+            position: relative;
+            margin-bottom: 25px;
+        }
+        
+        .input-group i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+            font-size: 1.1em;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 15px 15px 15px 45px;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        .input-group input:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+        }
+        
+        .login-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 12px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+        
+        .login-btn:hover {
+            background: linear-gradient(135deg, #0056b3, #004085);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 123, 255, 0.3);
+        }
+        
+        .login-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .alternative-actions {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e9ecef;
+        }
+        
+        .alternative-actions a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: 500;
+            margin: 0 10px;
+            transition: color 0.3s ease;
+        }
+        
+        .alternative-actions a:hover {
+            color: #0056b3;
+        }
+        
+        .back-link {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        
+        .back-link a {
+            color: #6c757d;
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: color 0.3s ease;
+        }
+        
+        .back-link a:hover {
+            color: #495057;
+        }
+        
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #dc3545;
+        }
+        
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #28a745;
+        }
+        
+        .loading-spinner {
+            display: none;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Fixed Header for Login Page -->
+    <header class="fixed-header">
+        <div class="container">
+            <div class="header-content">
+                <!-- Left side: Language selector -->
+                <div class="header-left">
+                    <div class="language-selection-bar" aria-label="Select Language">
+                        <button type="button" class="lang-btn" id="lang-te" onclick="translateToLanguage('te')">తెలుగు</button>
+                        <button type="button" class="lang-btn" id="lang-en" onclick="translateToLanguage('en')">English</button>
+                        <button type="button" class="lang-btn" id="lang-hi" onclick="translateToLanguage('hi')">हिंदी</button>
+                    </div>
+                </div>
+                
+                <!-- Center: Logo -->
+                <div class="logo">
+                    <i class="fas fa-shield-alt"></i>
+                    {% if current_language == 'hi' %}
+                    <span>पर्यटक सुरक्षा</span>
+                    {% elif current_language == 'ta' %}
+                    <span>சுற்றுலா பாதுகாப்பு</span>
+                    {% elif current_language == 'te' %}
+                    <span>పర్యాటక భద్రత</span>
+                    {% elif current_language == 'bn' %}
+                    <span>পর্যটক নিরাপত্তা</span>
+                    {% elif current_language == 'mr' %}
+                    <span>पर्यटक सुरक्षा</span>
+                    {% elif current_language == 'gu' %}
+                    <span>પર્યટક સલામતી</span>
+                    {% elif current_language == 'kn' %}
+                    <span>ಪ್ರವಾಸಿ ಸುರಕ್ಷತೆ</span>
+                    {% elif current_language == 'ml' %}
+                    <span>ടൂറിസ്റ്റ് സേഫ്റ്റി</span>
+                    {% elif current_language == 'pa' %}
+                    <span>ਸੈਲਾਨੀ ਸੁਰੱਖਿਆ</span>
+                    {% elif current_language == 'or' %}
+                    <span>ପର୍ଯ୍ୟଟକ ସୁରକ୍ଷା</span>
+                    {% elif current_language == 'as' %}
+                    <span>পৰ্যটক সুৰক্ষা</span>
+                    {% else %}
+                    <span>Tourist Safety</span>
+                    {% endif %}
+                </div>
+                
+                <!-- Right side: SOS Button with notification indicator -->
+                <div class="header-right">
+                    <button class="sos-btn" id="sosButton" onclick="triggerSOS()">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        {% if current_language == 'hi' %}
+                        <span>SOS सहायता</span>
+                        {% elif current_language == 'ta' %}
+                        <span>SOS உதவி</span>
+                        {% elif current_language == 'te' %}
+                        <span>SOS సహాయం</span>
+                        {% elif current_language == 'bn' %}
+                        <span>SOS সাহায্য</span>
+                        {% elif current_language == 'mr' %}
+                        <span>SOS मदत</span>
+                        {% elif current_language == 'gu' %}
+                        <span>SOS મદદ</span>
+                        {% elif current_language == 'kn' %}
+                        <span>SOS ಸಹಾಯ</span>
+                        {% elif current_language == 'ml' %}
+                        <span>SOS സഹായം</span>
+                        {% elif current_language == 'pa' %}
+                        <span>SOS ਮਦਦ</span>
+                        {% elif current_language == 'or' %}
+                        <span>SOS ସାହାଯ୍ୟ</span>
+                        {% elif current_language == 'as' %}
+                        <span>SOS সহায়</span>
+                        {% else %}
+                        <span>SOS Help</span>
+                        {% endif %}
+                        <span class="notification-badge" id="notificationBadge" style="display: none;">!</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+                    <a href="/" data-translate="home">Home</a>
+                    <a href="/enhanced_registration" data-translate="register">Register</a>
+                    <a href="/app_download" data-translate="download">Download</a>
+                    <a href="/digital_id" data-translate="digital_id">Digital ID</a>
+                </nav>
+                <div class="header-actions">
+                    <a href="/admin_login" class="login-btn admin-login-btn">
+                        <i class="fas fa-user-shield"></i>
+                        <span data-translate="admin_login">Admin Login</span>
+                    </a>
+                    <button class="emergency-btn" onclick="showEmergencyModal()">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span data-translate="emergency">Emergency</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="back-link">
+            <a href="/">
+                <i class="fas fa-arrow-left"></i>
+                <span data-translate="back_home">← Back to Home</span>
+            </a>
+        </div>
+
+        <div class="login-container">
+            <div class="login-header">
+                <i class="fas fa-user-circle"></i>
+                {% if current_language == 'hi' %}
+                <h1>पर्यटक लॉगिन</h1>
+                <p>अपने सुरक्षा डैशबोर्ड तक पहुंचने के लिए अपना पर्यटक आईडी दर्ज करें</p>
+                {% elif current_language == 'ta' %}
+                <h1>சுற்றுலா பயணி உள்நுழைவு</h1>
+                <p>உங்கள் பாதுகாப்பு டாஷ்போர்டை அணுக உங்கள் சுற்றுலா பயணி ஐடியை உள்ளிடவும்</p>
+                {% elif current_language == 'te' %}
+                <h1>పర్యాటక లాగిన్</h1>
+                <p>మీ భద్రతా డాష్‌బోర్డ్‌ను యాక్సెస్ చేయడానికి మీ టూరిస్ట్ IDని నమోదు చేయండి</p>
+                {% elif current_language == 'bn' %}
+                <h1>পর্যটক লগইন</h1>
+                <p>আপনার নিরাপত্তা ড্যাশবোর্ড অ্যাক্সেস করতে আপনার পর্যটক আইডি লিখুন</p>
+                {% elif current_language == 'mr' %}
+                <h1>पर्यटक लॉगिन</h1>
+                <p>तुमच्या सुरक्षा डॅशबोर्डमध्ये प्रवेश करण्यासाठी तुमचा पर्यटक आयडी प्रविष्ट करा</p>
+                {% elif current_language == 'gu' %}
+                <h1>પર્યટક લોગિન</h1>
+                <p>તમારા સલામતી ડેશબોર્ડને ઍક્સેસ કરવા માટે તમારો પર્યટક ID દાખલ કરો</p>
+                {% elif current_language == 'kn' %}
+                <h1>ಪ್ರವಾಸಿ ಲಾಗಿನ್</h1>
+                <p>ನಿಮ್ಮ ಸುರಕ್ಷತಾ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್ ಅನ್ನು ಪ್ರವೇಶಿಸಲು ನಿಮ್ಮ ಪ್ರವಾಸಿ ID ಅನ್ನು ನಮೂದಿಸಿ</p>
+                {% elif current_language == 'ml' %}
+                <h1>ടൂറിസ്റ്റ് ലോഗിൻ</h1>
+                <p>നിങ്ങളുടെ സുരക്ഷാ ഡാഷ്ബോർഡ് ആക്സസ് ചെയ്യാൻ നിങ്ങളുടെ ടൂറിസ്റ്റ് ഐഡി നൽകുക</p>
+                {% elif current_language == 'pa' %}
+                <h1>ਸੈਲਾਨੀ ਲਾਗਇਨ</h1>
+                <p>ਆਪਣੇ ਸੁਰੱਖਿਆ ਡੈਸ਼ਬੋਰਡ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਲਈ ਆਪਣਾ ਸੈਲਾਨੀ ਆਈਡੀ ਦਰਜ ਕਰੋ</p>
+                {% elif current_language == 'or' %}
+                <h1>ପର୍ଯ୍ୟଟକ ଲଗଇନ୍</h1>
+                <p>ଆପଣଙ୍କ ସୁରକ୍ଷା ଡ୍ୟାସବୋର୍ଡ ଆକ୍ସେସ କରିବାକୁ ଆପଣଙ୍କ ପର୍ଯ୍ୟଟକ ID ପ୍ରବେଶ କରନ୍ତୁ</p>
+                {% elif current_language == 'as' %}
+                <h1>পৰ্যটক লগইন</h1>
+                <p>আপোনাৰ সুৰক্ষা ডেশ্বব'ৰ্ড অভিগম কৰিবলৈ আপোনাৰ পৰ্যটক আইডি প্ৰৱেশ কৰক</p>
+                {% else %}
+                <h1>Tourist Login</h1>
+                <p>Enter your Tourist ID to access your safety dashboard</p>
+                {% endif %}
+            </div>
+
+            <div id="message"></div>
+
+            <form class="login-form" id="loginForm">
+                <div class="input-group">
+                    <i class="fas fa-id-card"></i>
+                    <input type="text" id="touristId" name="tourist_id" required
+                           {% if current_language == 'hi' %}
+                           placeholder="पर्यटक आईडी दर्ज करें (जैसे, TST-12345)"
+                           {% elif current_language == 'ta' %}
+                           placeholder="சுற்றுலா பயணி ஐடியை உள்ளிடவும் (எ.கா., TST-12345)"
+                           {% elif current_language == 'te' %}
+                           placeholder="టూరిస్ట్ IDని నమోదు చేయండి (ఉదా, TST-12345)"
+                           {% elif current_language == 'bn' %}
+                           placeholder="পর্যটক আইডি লিখুন (যেমন, TST-12345)"
+                           {% elif current_language == 'mr' %}
+                           placeholder="पर्यटक आयडी प्रविष्ट करा (उदा., TST-12345)"
+                           {% elif current_language == 'gu' %}
+                           placeholder="પર્યટક ID દાખલ કરો (દા.ત., TST-12345)"
+                           {% elif current_language == 'kn' %}
+                           placeholder="ಪ್ರವಾಸಿ ID ಅನ್ನು ನಮೂದಿಸಿ (ಉದಾ., TST-12345)"
+                           {% elif current_language == 'ml' %}
+                           placeholder="ടൂറിസ്റ്റ് ഐഡി നൽകുക (ഉദാ., TST-12345)"
+                           {% elif current_language == 'pa' %}
+                           placeholder="ਸੈਲਾਨੀ ਆਈਡੀ ਦਰਜ ਕਰੋ (ਜਿਵੇਂ, TST-12345)"
+                           {% elif current_language == 'or' %}
+                           placeholder="ପର୍ଯ୍ୟଟକ ID ପ୍ରବେଶ କରନ୍ତୁ (ଯେପରି, TST-12345)"
+                           {% elif current_language == 'as' %}
+                           placeholder="পৰ্যটক আইডি প্ৰৱেশ কৰক (যেনে, TST-12345)"
+                           {% else %}
+                           placeholder="Enter Tourist ID (e.g., TST-12345)"
+                           {% endif %}>
+                </div>
+
+                <button type="submit" class="login-btn" id="loginBtn">
+                    <span class="loading-spinner"><i class="fas fa-spinner fa-spin"></i></span>
+                    {% if current_language == 'hi' %}
+                    <span>लॉगिन</span>
+                    {% elif current_language == 'ta' %}
+                    <span>உள்நுழைவு</span>
+                    {% elif current_language == 'te' %}
+                    <span>లాగిన్</span>
+                    {% elif current_language == 'bn' %}
+                    <span>লগইন</span>
+                    {% elif current_language == 'mr' %}
+                    <span>लॉगिन</span>
+                    {% elif current_language == 'gu' %}
+                    <span>લોગિન</span>
+                    {% elif current_language == 'kn' %}
+                    <span>ಲಾಗಿನ್</span>
+                    {% elif current_language == 'ml' %}
+                    <span>ലോഗിൻ</span>
+                    {% elif current_language == 'pa' %}
+                    <span>ਲਾਗਇਨ</span>
+                    {% elif current_language == 'or' %}
+                    <span>ଲଗଇନ୍</span>
+                    {% elif current_language == 'as' %}
+                    <span>লগইন</span>
+                    {% else %}
+                    <span>Login</span>
+                    {% endif %}
+                </button>
+            </form>
+
+            <div class="alternative-actions">
+                {% if current_language == 'hi' %}
+                <p style="color: #6c757d; margin-bottom: 15px;">पर्यटक आईडी नहीं है?</p>
+                <a href="/enhanced_registration?language={{ current_language }}">अभी पंजीकरण करें</a>
+                <span style="color: #dee2e6;">|</span>
+                <a href="/admin_login?language={{ current_language }}">प्रशासक पहुंच</a>
+                {% elif current_language == 'ta' %}
+                <p style="color: #6c757d; margin-bottom: 15px;">சுற்றுலா பயணி ஐடி இல்லையா?</p>
+                <a href="/enhanced_registration?language={{ current_language }}">இப்போது பதிவு செய்யுங்கள்</a>
+                <span style="color: #dee2e6;">|</span>
+                <a href="/admin_login?language={{ current_language }}">நிர்வாக அணுகல்</a>
+                {% elif current_language == 'te' %}
+                <p style="color: #6c757d; margin-bottom: 15px;">టూరిస్ట్ ID లేదా?</p>
+                <a href="/enhanced_registration?language={{ current_language }}">ఇప్పుడే నమోదు చేసుకోండి</a>
+                <span style="color: #dee2e6;">|</span>
+                <a href="/admin_login?language={{ current_language }}">అడ్మిన్ యాక్సెస్</a>
+                {% else %}
+                <p style="color: #6c757d; margin-bottom: 15px;">Don't have a Tourist ID?</p>
+                <a href="/enhanced_registration?language={{ current_language }}">Register Now</a>
+                <span style="color: #dee2e6;">|</span>
+                <a href="/admin_login?language={{ current_language }}">Admin Access</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Emergency Modal -->
+    <div id="emergencyModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close" onclick="closeEmergencyModal()">&times;</span>
+            <h2><i class="fas fa-exclamation-triangle"></i> <span data-translate="emergency_services">Emergency Services</span></h2>
+            <div class="emergency-grid">
+                <a href="tel:100" class="emergency-contact">
+                    <i class="fas fa-shield-alt"></i>
+                    <span data-translate="police">Police</span>
+                    <strong>100</strong>
+                </a>
+                <a href="tel:102" class="emergency-contact">
+                    <i class="fas fa-ambulance"></i>
+                    <span data-translate="ambulance">Ambulance</span>
+                    <strong>102</strong>
+                </a>
+                <a href="tel:101" class="emergency-contact">
+                    <i class="fas fa-fire"></i>
+                    <span data-translate="fire">Fire Service</span>
+                    <strong>101</strong>
+                </a>
+                <a href="tel:1363" class="emergency-contact">
+                    <i class="fas fa-map-marked-alt"></i>
+                    <span data-translate="tourist_helpline">Tourist Helpline</span>
+                    <strong>1363</strong>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='common.js') }}"></script>
+    <script src="{{ url_for('static', filename='global-translation.js') }}"></script>
+    <script src="{{ url_for('static', filename='translation.js') }}"></script>
+    <script src="{{ url_for('static', filename='caution.js') }}"></script>
+    <script>
+        // Language change functionality
+        function changeLanguage(language) {
+            // Redirect to login page with new language parameter
+            window.location.href = `/login?language=${language}`;
+        }
+        // Activate current language button state
+        document.addEventListener('DOMContentLoaded', function(){
+            setTimeout(() => {
+                const lang = (window.globalTranslationManager && window.globalTranslationManager.currentLanguage) || '{{ current_language or "en" }}';
+                document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+                const activeBtn = document.getElementById('lang-' + lang);
+                if (activeBtn) activeBtn.classList.add('active');
+            }, 200);
+        });
+        
+        // SOS functionality with backend notification
+        async function triggerSOS() {
+            const sosBtn = document.getElementById('sosButton');
+            const originalText = sosBtn.innerHTML;
+            
+            // Show loading state
+            sosBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Sending SOS...</span>';
+            sosBtn.disabled = true;
+            
+            try {
+                // Get user location if available
+                let locationData = null;
+                if (navigator.geolocation) {
+                    locationData = await getCurrentLocation();
+                }
+                
+                const sosData = {
+                    timestamp: new Date().toISOString(),
+                    page: 'tourist_login',
+                    language: '{{ current_language or "en" }}',
+                    user_agent: navigator.userAgent,
+                    location: locationData,
+                    emergency_type: 'SOS_REQUEST',
+                    message: getSosMessage('{{ current_language or "en" }}')
+                };
+                
+                // Send SOS to backend
+                const response = await fetch('/api/emergency/sos', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(sosData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Show success state
+                    sosBtn.innerHTML = '<i class="fas fa-check"></i> <span>SOS Sent</span>';
+                    sosBtn.style.background = 'linear-gradient(135deg, #28a745, #20c997)';
+                    
+                    // Show notification badge
+                    showNotificationBadge();
+                    
+                    // Show success alert
+                    alert(getSosSuccessMessage('{{ current_language or "en" }}'));
+                    
+                    // Auto-dial emergency number after confirmation
+                    if (confirm(getEmergencyCallMessage('{{ current_language or "en" }}'))) {
+                        window.location.href = 'tel:112';
+                    }
+                } else {
+                    throw new Error(result.error || 'SOS request failed');
+                }
+                
+            } catch (error) {
+                console.error('SOS Error:', error);
+                sosBtn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> <span>SOS Failed</span>';
+                sosBtn.style.background = 'linear-gradient(135deg, #dc3545, #c82333)';
+                alert(getSosErrorMessage('{{ current_language or "en" }}'));
+            } finally {
+                sosBtn.disabled = false;
+                
+                // Reset button after 3 seconds
+                setTimeout(() => {
+                    sosBtn.innerHTML = originalText;
+                    sosBtn.style.background = 'linear-gradient(135deg, #dc3545, #c82333)';
+                }, 3000);
+            }
+        }
+        
+        // Get current location
+        function getCurrentLocation() {
+            return new Promise((resolve, reject) => {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        resolve({
+                            latitude: position.coords.latitude,
+                            longitude: position.coords.longitude,
+                            accuracy: position.coords.accuracy,
+                            timestamp: position.timestamp
+                        });
+                    },
+                    (error) => {
+                        resolve(null); // Don't reject, just return null
+                    },
+                    { timeout: 5000, enableHighAccuracy: true }
+                );
+            });
+        }
+        
+        // Show notification badge
+        function showNotificationBadge() {
+            const badge = document.getElementById('notificationBadge');
+            badge.style.display = 'flex';
+            
+            // Auto-hide after 10 seconds
+            setTimeout(() => {
+                badge.style.display = 'none';
+            }, 10000);
+        }
+        
+        // Language-specific messages
+        function getSosMessage(language) {
+            const messages = {
+                'hi': 'आपातकालीन SOS अनुरोध - तत्काल सहायता की आवश्यकता',
+                'ta': 'அவசர SOS கோரிக்கை - உடனடி உதவி தேவை',
+                'te': 'అత్యవసర SOS అభ్యర్థన - తక్షణ సహాయం అవసరం',
+                'bn': 'জরুরি SOS অনুরোধ - তাৎক্ষণিক সাহায্য প্রয়োজন',
+                'mr': 'आणीबाणीची SOS विनंती - तातडीची मदत आवश्यक',
+                'gu': 'કટોકટી SOS વિનંતી - તાત્કાલિક મદદ જરૂરી',
+                'kn': 'ತುರ್ತು SOS ವಿನಂತಿ - ತಕ್ಷಣದ ಸಹಾಯ ಅಗತ್ಯ',
+                'ml': 'എമർജൻസി SOS അഭ്യർത്ഥന - ഉടനടി സഹായം ആവശ്യം',
+                'pa': 'ਐਮਰਜੈਂਸੀ SOS ਬੇਨਤੀ - ਤੁਰੰਤ ਮਦਦ ਦੀ ਲੋੜ',
+                'or': 'ଜରୁରୀକାଳୀନ SOS ଅନୁରୋଧ - ତତକ୍ଷଣାତ ସାହାଯ୍ୟ ଆବଶ୍ୟକ',
+                'as': 'জৰুৰীকালীন SOS অনুৰোধ - তৎক্ষণাৎ সহায় প্ৰয়োজন',
+                'en': 'Emergency SOS Request - Immediate assistance needed'
+            };
+            return messages[language] || messages['en'];
+        }
+        
+        function getSosSuccessMessage(language) {
+            const messages = {
+                'hi': 'SOS सफलतापूर्वक भेजा गया! आपातकालीन सेवाओं को सूचित कर दिया गया है।',
+                'ta': 'SOS வெற்றிகரமாக அனுப்பப்பட்டது! அவசரகால சேவைகளுக்கு தெரிவிக்கப்பட்டுள்ளது।',
+                'te': 'SOS విజయవంతంగా పంపబడింది! అత్యవసర సేవలకు తెలియజేయబడింది।',
+                'bn': 'SOS সফলভাবে পাঠানো হয়েছে! জরুরি সেবাগুলিকে জানানো হয়েছে।',
+                'mr': 'SOS यशस्वीरित्या पाठवले! आणीबाणी सेवांना कळवले आहे।',
+                'gu': 'SOS સફળતાપૂર્વક મોકલાયું! કટોકટી સેવાઓને જાણ કરી દેવામાં આવી છે।',
+                'kn': 'SOS ಯಶಸ್ವಿಯಾಗಿ ಕಳುಹಿಸಲಾಗಿದೆ! ತುರ್ತು ಸೇವೆಗಳಿಗೆ ತಿಳಿಸಲಾಗಿದೆ।',
+                'ml': 'SOS വിജയകരമായി അയച്ചു! എമർജൻസി സേവനങ്ങളെ അറിയിച്ചിട്ടുണ്ട്।',
+                'pa': 'SOS ਸਫਲਤਾਪੂਰਵਕ ਭੇਜਿਆ ਗਿਆ! ਐਮਰਜੈਂਸੀ ਸੇਵਾਵਾਂ ਨੂੰ ਸੂਚਿਤ ਕੀਤਾ ਗਿਆ ਹੈ।',
+                'or': 'SOS ସଫଳତାର ସହିତ ପଠାଗଲା! ଜରୁରୀକାଳୀନ ସେବାଗୁଡ଼ିକୁ ସୂଚିତ କରାଗଲା।',
+                'as': 'SOS সফলভাবে পঠিওৱা হৈছে! জৰুৰীকালীন সেৱাসমূহক জনোৱা হৈছে।',
+                'en': 'SOS sent successfully! Emergency services have been notified.'
+            };
+            return messages[language] || messages['en'];
+        }
+        
+        function getEmergencyCallMessage(language) {
+            const messages = {
+                'hi': 'क्या आप अब आपातकालीन नंबर 112 पर कॉल करना चाहते हैं?',
+                'ta': 'இப்போது அவசரகால எண் 112 ஐ அழைக்க விரும்புகிறீர்களா?',
+                'te': 'మీరు ఇప్పుడు అత్యవసర నంబర్ 112 కు కాల్ చేయాలనుకుంటున్నారా?',
+                'bn': 'আপনি কি এখন জরুরি নম্বর 112 এ কল করতে চান?',
+                'mr': 'तुम्ही आता आणीबाणी क्रमांक 112 वर कॉल करू इच्छिता?',
+                'gu': 'શું તમે હવે કટોકટી નંબર 112 પર કૉલ કરવા માંગો છો?',
+                'kn': 'ನೀವು ಈಗ ತುರ್ತು ಸಂಖ್ಯೆ 112 ಗೆ ಕರೆ ಮಾಡಲು ಬಯಸುವಿರಾ?',
+                'ml': 'നിങ്ങൾ ഇപ്പോൾ എമർജൻസി നമ്പർ 112 ലേക്ക് വിളിക്കാൻ ആഗ്രഹിക്കുന്നുണ്ടോ?',
+                'pa': 'ਕੀ ਤੁਸੀਂ ਹੁਣ ਐਮਰਜੈਂਸੀ ਨੰਬਰ 112 ਤੇ ਕਾਲ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?',
+                'or': 'ଆପଣ ବର୍ତ୍ତମାନ ଜରୁରୀକାଳୀନ ନମ୍ବର 112 କୁ କଲ କରିବାକୁ ଚାହୁଁଛନ୍ତି କି?',
+                'as': 'আপুনি এতিয়া জৰুৰীকালীন নম্বৰ 112 লৈ কল কৰিব বিচাৰে নেকি?',
+                'en': 'Do you want to call emergency number 112 now?'
+            };
+            return messages[language] || messages['en'];
+        }
+        
+        function getSosErrorMessage(language) {
+            const messages = {
+                'hi': 'SOS भेजने में त्रुटि। कृपया सीधे 112 पर कॉल करें।',
+                'ta': 'SOS அனுப்புவதில் பிழை. தயவுசெய்து நேரடியாக 112 ஐ அழைக்கவும்.',
+                'te': 'SOS పంపడంలో లోపం. దయచేసి నేరుగా 112 కు కాల్ చేయండి।',
+                'bn': 'SOS পাঠাতে ত্রুটি। অনুগ্রহ করে সরাসরি 112 এ কল করুন।',
+                'mr': 'SOS पाठवण्यात त्रुटी. कृपया थेट 112 वर कॉल करा।',
+                'gu': 'SOS મોકલવામાં ભૂલ. કૃપા કરીને સીધા 112 પર કૉલ કરો.',
+                'kn': 'SOS ಕಳುಹಿಸುವಲ್ಲಿ ದೋಷ. ದಯವಿಟ್ಟು ನೇರವಾಗಿ 112 ಗೆ ಕರೆ ಮಾಡಿ।',
+                'ml': 'SOS അയക്കുന്നതിൽ പിശക്. ദയവായി നേരിട്ട് 112 ലേക്ക് വിളിക്കുക.',
+                'pa': 'SOS ਭੇਜਣ ਵਿੱਚ ਗਲਤੀ। ਕਿਰਪਾ ਕਰਕੇ ਸਿੱਧੇ 112 ਤੇ ਕਾਲ ਕਰੋ।',
+                'or': 'SOS ପଠାଇବାରେ ତ୍ରୁଟି। ଦୟାକରି ସିଧାସଳଖ 112 କୁ କଲ କରନ୍ତୁ।',
+                'as': 'SOS পঠোৱাত ত্ৰুটি। অনুগ্ৰহ কৰি পোনপটীয়াকৈ 112 লৈ কল কৰক।',
+                'en': 'Error sending SOS. Please call 112 directly.'
+            };
+            return messages[language] || messages['en'];
+        }
+        
+        // Initialize page with current language
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentLang = '{{ current_language or "en" }}';
+            
+            // Set language selector
+            const languageSelect = document.getElementById('languageSelect');
+            if (languageSelect) {
+                languageSelect.value = currentLang;
+            }
+            
+            // Store language preference
+            localStorage.setItem('preferred_language', currentLang);
+            
+            // Show welcome message based on language
+            setTimeout(() => {
+                let welcomeMessage = 'Welcome to Tourist Safety System!';
+                if (currentLang === 'hi') {
+                    welcomeMessage = 'पर्यटक सुरक्षा प्रणाली में आपका स्वागत है!';
+                } else if (currentLang === 'ta') {
+                    welcomeMessage = 'சுற்றுலா பாதுקாப்பு அமைப்பில் உங்களை வரவேற்கிறோம்!';
+                } else if (currentLang === 'te') {
+                    welcomeMessage = 'టూరిస్ట్ సేఫ్టి సిస్టమ్‌కు స్వాగతం!';
+                }
+                
+                if (typeof showUserCaution === 'function') {
+                    showUserCaution('welcome', '👋 Welcome', welcomeMessage, 'info');
+                }
+            }, 1000);
+        });
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeTranslations();
+        });
+
+        // Initialize translations
+        async function initializeTranslations() {
+            try {
+                await loadTranslations();
+            } catch (error) {
+                console.error('Error initializing translations:', error);
+            }
+        }
+
+        // Handle login form submission
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const touristId = document.getElementById('touristId').value.trim();
+            const loginBtn = document.getElementById('loginBtn');
+            const spinner = document.querySelector('.loading-spinner');
+            const messageDiv = document.getElementById('message');
+            
+            if (!touristId) {
+                showMessage('Please enter your Tourist ID', 'error');
+                return;
+            }
+            
+            // Show loading state
+            loginBtn.disabled = true;
+            spinner.style.display = 'inline-block';
+            messageDiv.innerHTML = '';
+            
+            try {
+                const response = await apiRequest('/api/tourist_login', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        tourist_id: touristId
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    showMessage(data.message, 'success');
+                    setTimeout(() => {
+                        window.location.href = data.redirect_url;
+                    }, 1000);
+                } else {
+                    showMessage(data.error || 'Login failed', 'error');
+                }
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                showMessage('Network error. Please try again.', 'error');
+            } finally {
+                loginBtn.disabled = false;
+                spinner.style.display = 'none';
+            }
+        });
+
+        // Show message function
+        function showMessage(message, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.innerHTML = `<div class="${type}-message">${message}</div>`;
+        }
+
+        // Emergency modal functions
+        function showEmergencyModal() {
+            document.getElementById('emergencyModal').style.display = 'block';
+        }
+
+        function closeEmergencyModal() {
+            document.getElementById('emergencyModal').style.display = 'none';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('emergencyModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

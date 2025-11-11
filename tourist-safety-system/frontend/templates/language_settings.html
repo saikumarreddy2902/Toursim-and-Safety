@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-translate="language_settings_title">Language Settings - Tourist Safety System</title>
+    <link rel="stylesheet" href="../static/common.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .language-settings-container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .settings-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .settings-header h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .settings-header p {
+            color: #7f8c8d;
+            font-size: 1.1em;
+        }
+        
+        .language-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .language-card {
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .language-card:hover {
+            border-color: #007bff;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,123,255,0.2);
+        }
+        
+        .language-card.active {
+            border-color: #28a745;
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+        }
+        
+        .language-card .flag {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .language-card .name {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .language-card .native-name {
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+        
+        .language-card .check-icon {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: #28a745;
+            font-size: 1.2em;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .language-card.active .check-icon {
+            opacity: 1;
+        }
+        
+        .settings-actions {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #f0f0f0;
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,123,255,0.3);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+        
+        .current-language-info {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .current-language-info h3 {
+            color: #1976d2;
+            margin-bottom: 10px;
+        }
+        
+        .current-language-display {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #0d47a1;
+        }
+        
+        .language-features {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+        
+        .language-features h3 {
+            color: #495057;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .features-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .features-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .features-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .features-list .icon {
+            color: #28a745;
+            width: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="language-settings-container">
+        <div class="settings-header">
+            <h1 data-translate="language_settings_title">Language Settings</h1>
+            <p data-translate="language_settings_description">Choose your preferred language for the entire system</p>
+        </div>
+        
+        <div class="current-language-info">
+            <h3 data-translate="current_language_label">Current Language</h3>
+            <div class="current-language-display" id="current-language-display">English</div>
+        </div>
+        
+        <div class="language-grid" id="language-grid">
+            <!-- Languages will be populated by JavaScript -->
+        </div>
+        
+        <div class="language-features">
+            <h3 data-translate="language_features_title">Language Features</h3>
+            <ul class="features-list">
+                <li>
+                    <i class="fas fa-check icon"></i>
+                    <span data-translate="feature_consistent_experience">Consistent language experience across all pages</span>
+                </li>
+                <li>
+                    <i class="fas fa-check icon"></i>
+                    <span data-translate="feature_form_persistence">Language preserved in all forms and submissions</span>
+                </li>
+                <li>
+                    <i class="fas fa-check icon"></i>
+                    <span data-translate="feature_session_sync">Synchronized with your session across devices</span>
+                </li>
+                <li>
+                    <i class="fas fa-check icon"></i>
+                    <span data-translate="feature_instant_switch">Instant language switching without page reload</span>
+                </li>
+                <li>
+                    <i class="fas fa-check icon"></i>
+                    <span data-translate="feature_navigation_preserved">Language maintained during navigation</span>
+                </li>
+            </ul>
+        </div>
+        
+        <div class="settings-actions">
+            <button class="btn btn-primary" onclick="saveLanguageSettings()" data-translate="save_settings">
+                <i class="fas fa-save"></i>
+                Save Settings
+            </button>
+            <a href="index.html" class="btn btn-secondary" data-translate="back_to_home">
+                <i class="fas fa-home"></i>
+                Back to Home
+            </a>
+        </div>
+    </div>
+
+    <script src="../static/common.js"></script>
+    <script>
+        // Language definitions with native names and flags
+        const languageDefinitions = {
+            'en': { 
+                name: 'English', 
+                nativeName: 'English', 
+                flag: '🇺🇸',
+                description: 'Default language'
+            },
+            'hi': { 
+                name: 'हिंदी', 
+                nativeName: 'हिंदी', 
+                flag: '🇮🇳',
+                description: 'National language of India'
+            },
+            'ta': { 
+                name: 'தமிழ்', 
+                nativeName: 'தமிழ்', 
+                flag: '🇮🇳',
+                description: 'Spoken in Tamil Nadu'
+            },
+            'te': { 
+                name: 'తెలుగు', 
+                nativeName: 'తెలుగు', 
+                flag: '🇮🇳',
+                description: 'Spoken in Andhra Pradesh & Telangana'
+            },
+            'bn': { 
+                name: 'বাংলা', 
+                nativeName: 'বাংলা', 
+                flag: '🇮🇳',
+                description: 'Spoken in West Bengal'
+            },
+            'mr': { 
+                name: 'मराठी', 
+                nativeName: 'मराठी', 
+                flag: '🇮🇳',
+                description: 'Spoken in Maharashtra'
+            },
+            'gu': { 
+                name: 'ગુજરાતી', 
+                nativeName: 'ગુજરાતી', 
+                flag: '🇮🇳',
+                description: 'Spoken in Gujarat'
+            },
+            'kn': { 
+                name: 'ಕನ್ನಡ', 
+                nativeName: 'ಕನ್ನಡ', 
+                flag: '🇮🇳',
+                description: 'Spoken in Karnataka'
+            },
+            'ml': { 
+                name: 'മലയാളം', 
+                nativeName: 'മലയാളം', 
+                flag: '🇮🇳',
+                description: 'Spoken in Kerala'
+            },
+            'pa': { 
+                name: 'ਪੰਜਾਬੀ', 
+                nativeName: 'ਪੰਜਾਬੀ', 
+                flag: '🇮🇳',
+                description: 'Spoken in Punjab'
+            },
+            'or': { 
+                name: 'ଓଡ଼ିଆ', 
+                nativeName: 'ଓଡ଼ିଆ', 
+                flag: '🇮🇳',
+                description: 'Spoken in Odisha'
+            },
+            'as': { 
+                name: 'অসমীয়া', 
+                nativeName: 'অসমীয়া', 
+                flag: '🇮🇳',
+                description: 'Spoken in Assam'
+            }
+        };
+
+        // Initialize the language settings page
+        async function initializeLanguageSettings() {
+            await initializeLanguage();
+            populateLanguageGrid();
+            updateCurrentLanguageDisplay();
+        }
+
+        // Populate the language grid
+        function populateLanguageGrid() {
+            const grid = document.getElementById('language-grid');
+            grid.innerHTML = '';
+
+            Object.entries(languageDefinitions).forEach(([code, lang]) => {
+                const card = document.createElement('div');
+                card.className = `language-card ${currentLanguage === code ? 'active' : ''}`;
+                card.onclick = () => selectLanguage(code);
+                card.innerHTML = `
+                    <div class="flag">${lang.flag}</div>
+                    <div class="name">${lang.name}</div>
+                    <div class="native-name">${lang.nativeName}</div>
+                    <i class="fas fa-check check-icon"></i>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Select a language
+        async function selectLanguage(langCode) {
+            await switchLanguage(langCode);
+            
+            // Update card states
+            document.querySelectorAll('.language-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+            
+            updateCurrentLanguageDisplay();
+        }
+
+        // Update current language display
+        function updateCurrentLanguageDisplay() {
+            const display = document.getElementById('current-language-display');
+            const langInfo = languageDefinitions[currentLanguage] || languageDefinitions['en'];
+            display.textContent = `${langInfo.name} (${langInfo.nativeName})`;
+        }
+
+        // Save language settings
+        async function saveLanguageSettings() {
+            try {
+                await apiRequest('/api/set_language', {
+                    method: 'POST',
+                    body: JSON.stringify({ language: currentLanguage })
+                });
+                
+                showToast('Language settings saved successfully!', 'success');
+                
+                // Redirect after a short delay
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1500);
+                
+            } catch (error) {
+                console.error('Error saving language settings:', error);
+                showToast('Error saving language settings', 'error');
+            }
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', initializeLanguageSettings);
+    </script>
+</body>
+</html>

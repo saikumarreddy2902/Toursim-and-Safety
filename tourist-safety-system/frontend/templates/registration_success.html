@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title data-translate="registration_successful">Registration Successful</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='registration.css') }}">
+    <style>
+        .success-container {max-width:800px;margin:40px auto;padding:30px;background:#ffffffcc;border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,.12);} 
+        .success-badge {font-size:64px;line-height:1;margin-bottom:10px;} 
+        .hash-box {font-family:monospace;background:#f5f7fa;padding:12px 14px;border-radius:6px;word-break:break-all;font-size:13px;border:1px solid #e2e8f0;margin-top:8px;} 
+        .actions {margin-top:28px;display:flex;flex-wrap:wrap;gap:14px;} 
+        .actions a{background:#2563eb;color:#fff;padding:12px 20px;border-radius:6px;text-decoration:none;font-weight:600;transition:.25s;} 
+        .actions a:hover{background:#1d4ed8;} 
+        .meta {margin-top:18px;font-size:14px;color:#334155;} 
+        .pill {display:inline-block;background:#e0f2fe;color:#0369a1;padding:4px 10px;border-radius:999px;font-size:12px;margin-left:8px;} 
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="success-container">
+            <div class="success-badge">✅</div>
+            <h1 data-translate="registration_successful">Registration Successful!</h1>
+            <p data-translate="registration_success_message">Your information has been securely stored. Keep your Tourist ID for future reference.</p>
+            {% if tourist_id %}
+            <div class="meta">
+                <strong data-translate="tourist_id_label">Tourist ID:</strong>
+                <span>{{ tourist_id }}</span>
+                <span class="pill">{{ registration_type|capitalize }}</span>
+            </div>
+            {% endif %}
+            {% if blockchain_hash %}
+            <div class="meta" style="margin-top:12px;">
+                <strong data-translate="blockchain_hash_label">Blockchain Hash:</strong>
+                <div class="hash-box">{{ blockchain_hash }}</div>
+            </div>
+            {% endif %}
+            <div class="actions">
+                <a href="/" data-translate="back_home">Back to Home</a>
+                <a href="/digital_id{% if tourist_id %}?tourist_id={{ tourist_id }}{% endif %}" data-translate="view_digital_id">View Digital ID</a>
+                <a href="/user_login{% if tourist_id %}?prefill={{ tourist_id }}{% endif %}" data-translate="go_to_login">Go to User Login</a>
+                <a href="/enhanced_registration" data-translate="register_another">Register Another</a>
+            </div>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='common.js') }}"></script>
+</body>
+</html>

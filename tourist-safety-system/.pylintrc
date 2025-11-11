@@ -1,0 +1,26 @@
+[MASTER]
+ignore=venv,node_modules,__pycache__
+
+[MESSAGES CONTROL]
+disable=
+    missing-module-docstring,
+    missing-class-docstring,
+    missing-function-docstring,
+    too-few-public-methods,
+    too-many-arguments,
+    too-many-locals,
+    too-many-instance-attributes,
+    import-error,
+    no-member,
+    unsubscriptable-object,
+    too-many-branches,
+    too-many-statements
+
+[TYPECHECK]
+ignored-modules=pymongo,bson,flask_socketio
+
+[BASIC]
+good-names=i,j,k,ex,Run,_,db,id,pk
+
+[FORMAT]
+max-line-length=120

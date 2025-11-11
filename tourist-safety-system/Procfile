@@ -1,0 +1,6 @@
+# Heroku / Platform-as-a-Service Deployment Configuration
+# Use Gunicorn with the WSGI entrypoint for production
+web: cd backend && gunicorn -c ../gunicorn.conf.py wsgi:app
+
+# Fallback (uncomment for debugging if needed)
+# web: cd backend && python app.py

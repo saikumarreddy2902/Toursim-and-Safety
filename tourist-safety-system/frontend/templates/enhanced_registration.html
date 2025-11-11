@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Tourist Registration - Smart Tourist Safety System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='registration.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 data-translate="enhanced_registration_title">Enhanced Tourist Registration</h1>
+            <div class="language-switcher">
+                <select id="language-select" class="language-selector" onchange="changeLanguage()">
+                    <option value="en">English</option>
+                    <option value="hi">हिंदी</option>
+                    <option value="ta">தமிழ்</option>
+                    <option value="te">తెలుగు</option>
+                    <option value="bn">বাংলা</option>
+                    <option value="mr">मराठी</option>
+                    <option value="gu">ગુજરાતી</option>
+                    <option value="kn">ಕನ್ನಡ</option>
+                    <option value="ml">മലയാളം</option>
+                    <option value="pa">ਪੰਜਾਬੀ</option>
+                    <option value="or">ଓଡ଼ିଆ</option>
+                    <option value="as">অসমীয়া</option>
+                </select>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <div class="back-link">
+                <a href="/" data-translate="back_home">← Back to Home</a>
+            </div>
+
+            <!-- Progress Indicator -->
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress-step active" id="step-1">
+                        <div class="step-number">1</div>
+                        <div class="step-label" data-translate="personal_info">Personal Info</div>
+                    </div>
+                    <div class="progress-step" id="step-2">
+                        <div class="step-number">2</div>
+                        <div class="step-label" data-translate="documents">Documents</div>
+                    </div>
+                    <div class="progress-step" id="step-3">
+                        <div class="step-number">3</div>
+                        <div class="step-label" data-translate="medical_info">Medical Info</div>
+                    </div>
+                    <div class="progress-step" id="step-4">
+                        <div class="step-number">4</div>
+                        <div class="step-label" data-translate="emergency_contacts">Emergency</div>
+                    </div>
+                    <div class="progress-step" id="step-5">
+                        <div class="step-number">5</div>
+                        <div class="step-label" data-translate="verification">Verification</div>
+                    </div>
+                </div>
+            </div>
+
+            <form id="enhanced-registration-form" class="registration-form" onsubmit="return handleFormSubmission(event)">
+                <!-- Step 1: Personal Information -->
+                <div class="form-step active" id="personal-info-step">
+                    <div class="form-section">
+                        <h2 data-translate="personal_information">📋 Personal Information</h2>
+                        <p class="step-description" data-translate="personal_info_desc">Please provide your basic personal information (all data is encrypted and secure)</p>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="full-name" data-translate="full_name">Full Name *</label>
+                                <input type="text" id="full-name" name="full_name" required 
+                                       placeholder="Enter your full name as per official documents">
+                                <div class="field-icon">👤</div>
+                            </div>
+                            <div class="form-group">
+                                <label for="date-of-birth" data-translate="date_of_birth">Date of Birth *</label>
+                                <input type="date" id="date-of-birth" name="date_of_birth" required>
+                                <div class="field-icon">📅</div>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="gender" data-translate="gender">Gender *</label>
+                                <select id="gender" name="gender" required>
+                                    <option value="" data-translate="select_gender">Select Gender</option>
+                                    <option value="male" data-translate="male">Male</option>
+                                    <option value="female" data-translate="female">Female</option>
+                                    <option value="other" data-translate="other">Other</option>
+                                    <option value="prefer_not_to_say" data-translate="prefer_not_to_say">Prefer not to say</option>
+                                </select>
+                                <div class="field-icon">⚧</div>
+                            </div>
+                            <div class="form-group">
+                                <label for="nationality" data-translate="nationality">Nationality *</label>
+                                <select id="nationality" name="nationality" required>
+                                    <option value="" data-translate="select_nationality">Select Nationality</option>
+                                    <option value="indian">Indian</option>
+                                    <option value="us">United States</option>
+                                    <option value="uk">United Kingdom</option>
+                                    <option value="canada">Canada</option>
+                                    <option value="australia">Australia</option>
+                                    <option value="germany">Germany</option>
+                                    <option value="france">France</option>
+                                    <option value="japan">Japan</option>
+                                    <option value="china">China</option>
+                                    <option value="other">Other</option>
+                                </select>
+                                <div class="field-icon">🌍</div>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="phone" data-translate="phone_number">Phone Number *</label>
+                                <input type="tel" id="phone" name="phone" required 
+                                       placeholder="+91 9876543210">
+                                <div class="field-icon">📱</div>
+                            </div>
+                            <div class="form-group">
+                                <label for="email" data-translate="email_address">Email Address *</label>
+                                <input type="email" id="email" name="email" required 
+                                       placeholder="example@email.com">
+                                <div class="field-icon">📧</div>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group" style="flex:1 1 100%;">
+                                <label for="account-password" data-translate="password">Password *</label>
+                                <div style="position:relative; display:flex; align-items:center;">
+                                    <input type="password" id="account-password" name="account_password" required 
+                                           placeholder="Create a secure password" autocomplete="new-password"
+                                           style="padding-right:90px;">
+                                    <button type="button" id="toggle-password" 
+                                            style="position:absolute; right:8px; top:50%; transform:translateY(-50%); padding:6px 10px; border:1px solid #888; background:#f5f5f5; cursor:pointer; border-radius:6px; font-size:12px;">
+                                        Show
+                                    </button>
+                                </div>
+                                <small style="display:block; margin-top:6px; color:#555; font-size:12px;" data-translate="password_hint">Use at least 6 characters. You'll use this email & password to log into your dashboard.</small>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="address" data-translate="home_address">Home Address *</label>
+                            <textarea id="address" name="address" required rows="3" 
+                                      placeholder="Enter your complete home address"></textarea>
+                            <div class="field-icon">🏠</div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="occupation" data-translate="occupation">Occupation</label>
+                                <input type="text" id="occupation" name="occupation" 
+                                       placeholder="Your profession or occupation">
+                                <div class="field-icon">💼</div>
+                            </div>
+                            <div class="form-group">
+                                <label for="education" data-translate="education_level">Education Level</label>
+                                <select id="education" name="education">
+                                    <option value="" data-translate="select_education">Select Education Level</option>
+                                    <option value="high_school">High School</option>
+                                    <option value="bachelor">Bachelor's Degree</option>
+                                    <option value="master">Master's Degree</option>
+                                    <option value="phd">PhD</option>
+                                    <option value="other">Other</option>
+                                </select>
+                                <div class="field-icon">🎓</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Documents Upload -->
+                <div class="form-step" id="documents-step">
+                    <div class="form-section">
+                        <h2 data-translate="document_upload">📄 Document Upload</h2>
+                        <p class="step-description" data-translate="documents_desc">Upload your official documents for verification (all files are encrypted)</p>
+                        
+                        <div class="document-upload-section">
+                            <h3 data-translate="passport_visa">Passport & Visa Information</h3>
+                            <!-- Profile Photo -->
+                            <div class="form-group">
+                                <label for="profile-photo-upload">Profile Photo</label>
+                                <div class="file-upload-area" onclick="triggerFileUpload('profile-photo-upload')">
+                                    <div class="upload-icon">📷</div>
+                                    <div>
+                                        <p>Click to upload your profile photo</p>
+                                        <small>JPG/PNG, up to 5 MB</small>
+                                    </div>
+                                </div>
+                                <input type="file" id="profile-photo-upload" name="profile_photo" accept="image/*" style="display: none;">
+                                <div id="profile-photo-preview" class="file-preview"></div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="passport-number" data-translate="passport_number">Passport Number *</label>
+                                    <input type="text" id="passport-number" name="passport_number" required 
+                                           placeholder="Enter passport number">
+                                    <div class="field-icon">📘</div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="passport-expiry" data-translate="passport_expiry">Passport Expiry Date *</label>
+                                    <input type="date" id="passport-expiry" name="passport_expiry" required>
+                                    <div class="field-icon">📅</div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="passport-upload" data-translate="passport_upload">Upload Passport Copy *</label>
+                                <div class="file-upload-area" onclick="triggerFileUpload('passport-upload')">
+                                    <input type="file" id="passport-upload" name="passport_file" accept=".pdf,.jpg,.jpeg,.png" required style="display: none;">
+                                    <div class="upload-content">
+                                        <div class="upload-icon">📎</div>
+                                        <div class="upload-text" data-translate="click_to_upload">Click to upload or drag and drop</div>
+                                        <div class="upload-formats">PDF, JPG, PNG (Max 5MB)</div>
+                                    </div>
+                                </div>
+                                <div id="passport-preview" class="file-preview"></div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="visa-required" data-translate="visa_required">Do you have a visa?</label>
+                                    <select id="visa-required" name="visa_required" onchange="toggleVisaFields()">
+                                        <option value="no" data-translate="no">No</option>
+                                        <option value="yes" data-translate="yes">Yes</option>
+                                    </select>
+                                    <div class="field-icon">🔖</div>
+                                </div>
+                            </div>
+
+                            <div id="visa-fields" class="visa-section" style="display: none;">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="visa-number" data-translate="visa_number">Visa Number</label>
+                                        <input type="text" id="visa-number" name="visa_number" 
+                                               placeholder="Enter visa number">
+                                        <div class="field-icon">🔖</div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="visa-expiry" data-translate="visa_expiry">Visa Expiry Date</label>
+                                        <input type="date" id="visa-expiry" name="visa_expiry">
+                                        <div class="field-icon">📅</div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="visa-upload" data-translate="visa_upload">Upload Visa Copy</label>
+                                    <div class="file-upload-area" onclick="triggerFileUpload('visa-upload')">
+                                        <input type="file" id="visa-upload" name="visa_file" accept=".pdf,.jpg,.jpeg,.png" style="display: none;">
+                                        <div class="upload-content">
+                                            <div class="upload-icon">📎</div>
+                                            <div class="upload-text" data-translate="click_to_upload">Click to upload or drag and drop</div>
+                                            <div class="upload-formats">PDF, JPG, PNG (Max 5MB)</div>
+                                        </div>
+                                    </div>
+                                    <div id="visa-preview" class="file-preview"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="document-upload-section">
+                            <h3 data-translate="additional_documents">Additional Documents (Optional)</h3>
+                            
+                            <div class="form-group">
+                                <label for="id-upload" data-translate="government_id">Government ID (Driver's License, National ID, etc.)</label>
+                                <div class="file-upload-area" onclick="triggerFileUpload('id-upload')">
+                                    <input type="file" id="id-upload" name="id_file" accept=".pdf,.jpg,.jpeg,.png" style="display: none;">
+                                    <div class="upload-content">
+                                        <div class="upload-icon">📎</div>
+                                        <div class="upload-text" data-translate="click_to_upload">Click to upload or drag and drop</div>
+                                        <div class="upload-formats">PDF, JPG, PNG (Max 5MB)</div>
+                                    </div>
+                                </div>
+                                <div id="id-preview" class="file-preview"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Medical Information -->
+                <div class="form-step" id="medical-info-step">
+                    <div class="form-section">
+                        <h2 data-translate="medical_information">🏥 Medical Information</h2>
+                        <p class="step-description" data-translate="medical_info_desc">Provide medical information for emergency situations (encrypted and confidential)</p>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="blood-type" data-translate="blood_type">Blood Type</label>
+                                <select id="blood-type" name="blood_type">
+                                    <option value="" data-translate="select_blood_type">Select Blood Type</option>
+                                    <option value="A+">A+</option>
+                                    <option value="A-">A-</option>
+                                    <option value="B+">B+</option>
+                                    <option value="B-">B-</option>
+                                    <option value="AB+">AB+</option>
+                                    <option value="AB-">AB-</option>
+                                    <option value="O+">O+</option>
+                                    <option value="O-">O-</option>
+                                    <option value="unknown" data-translate="unknown">Unknown</option>
+                                </select>
+                                <div class="field-icon">🩸</div>
+                            </div>
+                            <div class="form-group">
+                                <label for="height" data-translate="height">Height (cm)</label>
+                                <input type="number" id="height" name="height" placeholder="170" min="50" max="250">
+                                <div class="field-icon">📏</div>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="weight" data-translate="weight">Weight (kg)</label>
+                                <input type="number" id="weight" name="weight" placeholder="70" min="20" max="300">
+                                <div class="field-icon">⚖️</div>
+                            </div>
+                            <div class="form-group">
+                                <label for="medical-insurance" data-translate="medical_insurance">Medical Insurance Provider</label>
+                                <input type="text" id="medical-insurance" name="medical_insurance" 
+                                       placeholder="Insurance company name">
+                                <div class="field-icon">🏥</div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="allergies" data-translate="allergies">Allergies & Food Restrictions</label>
+                            <textarea id="allergies" name="allergies" rows="3" 
+                                      placeholder="List any allergies, food restrictions, or dietary requirements"></textarea>
+                            <div class="field-icon">⚠️</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="medications" data-translate="current_medications">Current Medications</label>
+                            <textarea id="medications" name="medications" rows="3" 
+                                      placeholder="List any medications you are currently taking"></textarea>
+                            <div class="field-icon">💊</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="medical-conditions" data-translate="medical_conditions">Medical Conditions</label>
+                            <textarea id="medical-conditions" name="medical_conditions" rows="3" 
+                                      placeholder="List any chronic conditions, disabilities, or medical concerns"></textarea>
+                            <div class="field-icon">🏥</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="emergency-instructions" data-translate="emergency_medical_instructions">Emergency Medical Instructions</label>
+                            <textarea id="emergency-instructions" name="emergency_instructions" rows="3" 
+                                      placeholder="Special instructions for emergency medical personnel"></textarea>
+                            <div class="field-icon">🚨</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="medical-upload" data-translate="medical_documents">Medical Documents (Optional)</label>
+                            <div class="file-upload-area" onclick="triggerFileUpload('medical-upload')">
+                                <input type="file" id="medical-upload" name="medical_file" accept=".pdf,.jpg,.jpeg,.png" style="display: none;" multiple>
+                                <div class="upload-content">
+                                    <div class="upload-icon">📎</div>
+                                    <div class="upload-text" data-translate="click_to_upload">Upload medical records, prescriptions, etc.</div>
+                                    <div class="upload-formats">PDF, JPG, PNG (Max 5MB each)</div>
+                                </div>
+                            </div>
+                            <div id="medical-preview" class="file-preview"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 4: Emergency Contacts -->
+                <div class="form-step" id="emergency-contacts-step">
+                    <div class="form-section">
+                        <h2 data-translate="emergency_contacts_info">🚨 Emergency Contacts</h2>
+                        <p class="step-description" data-translate="emergency_contacts_desc">Provide emergency contact information for critical situations</p>
+                        
+                        <div class="emergency-contact-section">
+                            <h3 data-translate="primary_emergency_contact">Primary Emergency Contact</h3>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="emergency-name-1" data-translate="contact_name">Contact Name *</label>
+                                    <input type="text" id="emergency-name-1" name="emergency_name_1" required 
+                                           placeholder="Full name of emergency contact">
+                                    <div class="field-icon">👤</div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="emergency-relationship-1" data-translate="relationship">Relationship *</label>
+                                    <select id="emergency-relationship-1" name="emergency_relationship_1" required>
+                                        <option value="" data-translate="select_relationship">Select Relationship</option>
+                                        <option value="spouse" data-translate="spouse">Spouse</option>
+                                        <option value="parent" data-translate="parent">Parent</option>
+                                        <option value="child" data-translate="child">Child</option>
+                                        <option value="sibling" data-translate="sibling">Sibling</option>
+                                        <option value="friend" data-translate="friend">Friend</option>
+                                        <option value="colleague" data-translate="colleague">Colleague</option>
+                                        <option value="other" data-translate="other">Other</option>
+                                    </select>
+                                    <div class="field-icon">👥</div>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="emergency-phone-1" data-translate="contact_phone">Phone Number *</label>
+                                    <input type="tel" id="emergency-phone-1" name="emergency_phone_1" required 
+                                           placeholder="+91 9876543210">
+                                    <div class="field-icon">📱</div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="emergency-email-1" data-translate="contact_email">Email Address</label>
+                                    <input type="email" id="emergency-email-1" name="emergency_email_1" 
+                                           placeholder="contact@email.com">
+                                    <div class="field-icon">📧</div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="emergency-address-1" data-translate="contact_address">Address</label>
+                                <textarea id="emergency-address-1" name="emergency_address_1" rows="2" 
+                                          placeholder="Emergency contact's address"></textarea>
+                                <div class="field-icon">🏠</div>
+                            </div>
+                        </div>
+
+                        <div class="emergency-contact-section">
+                            <h3 data-translate="secondary_emergency_contact">Secondary Emergency Contact</h3>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="emergency-name-2" data-translate="contact_name">Contact Name</label>
+                                    <input type="text" id="emergency-name-2" name="emergency_name_2" 
+                                           placeholder="Full name of secondary contact">
+                                    <div class="field-icon">👤</div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="emergency-relationship-2" data-translate="relationship">Relationship</label>
+                                    <select id="emergency-relationship-2" name="emergency_relationship_2">
+                                        <option value="" data-translate="select_relationship">Select Relationship</option>
+                                        <option value="spouse" data-translate="spouse">Spouse</option>
+                                        <option value="parent" data-translate="parent">Parent</option>
+                                        <option value="child" data-translate="child">Child</option>
+                                        <option value="sibling" data-translate="sibling">Sibling</option>
+                                        <option value="friend" data-translate="friend">Friend</option>
+                                        <option value="colleague" data-translate="colleague">Colleague</option>
+                                        <option value="other" data-translate="other">Other</option>
+                                    </select>
+                                    <div class="field-icon">👥</div>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="emergency-phone-2" data-translate="contact_phone">Phone Number</label>
+                                    <input type="tel" id="emergency-phone-2" name="emergency_phone_2" 
+                                           placeholder="+91 9876543210">
+                                    <div class="field-icon">📱</div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="emergency-email-2" data-translate="contact_email">Email Address</label>
+                                    <input type="email" id="emergency-email-2" name="emergency_email_2" 
+                                           placeholder="contact@email.com">
+                                    <div class="field-icon">📧</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="emergency-contact-section">
+                            <h3 data-translate="local_emergency_contact">Local Emergency Contact (Optional)</h3>
+                            <p class="field-note" data-translate="local_contact_note">Someone in your destination country who can assist in emergencies</p>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="local-contact-name" data-translate="contact_name">Contact Name</label>
+                                    <input type="text" id="local-contact-name" name="local_contact_name" 
+                                           placeholder="Local contact's name">
+                                    <div class="field-icon">👤</div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="local-contact-phone" data-translate="contact_phone">Phone Number</label>
+                                    <input type="tel" id="local-contact-phone" name="local_contact_phone" 
+                                           placeholder="Local phone number">
+                                    <div class="field-icon">📱</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 5: Verification & Blockchain -->
+                <div class="form-step" id="verification-step">
+                    <div class="form-section">
+                        <h2 data-translate="verification_blockchain">🔐 Verification & Blockchain Storage</h2>
+                        <p class="step-description" data-translate="verification_desc">Review your information and create tamper-proof digital ID on blockchain</p>
+                        
+                        <div class="verification-summary">
+                            <h3 data-translate="information_summary">Information Summary</h3>
+                            <div id="summary-content" class="summary-content">
+                                <!-- Summary will be populated by JavaScript -->
+                            </div>
+                        </div>
+
+                        <div class="blockchain-info">
+                            <h3 data-translate="blockchain_storage">🔗 Blockchain Storage</h3>
+                            <div class="blockchain-features">
+                                <div class="feature-item">
+                                    <div class="feature-icon">🔒</div>
+                                    <div class="feature-text">
+                                        <strong data-translate="tamper_proof">Tamper-Proof</strong>
+                                        <p data-translate="tamper_proof_desc">Your digital ID will be stored on blockchain, making it impossible to alter or fake</p>
+                                    </div>
+                                </div>
+                                <div class="feature-item">
+                                    <div class="feature-icon">🔐</div>
+                                    <div class="feature-text">
+                                        <strong data-translate="encrypted_storage">Encrypted Storage</strong>
+                                        <p data-translate="encrypted_storage_desc">All sensitive data is encrypted before blockchain storage</p>
+                                    </div>
+                                </div>
+                                <div class="feature-item">
+                                    <div class="feature-icon">✅</div>
+                                    <div class="feature-text">
+                                        <strong data-translate="instant_verification">Instant Verification</strong>
+                                        <p data-translate="instant_verification_desc">Authorities can instantly verify your identity using blockchain</p>
+                                    </div>
+                                </div>
+                                <div class="feature-item">
+                                    <div class="feature-icon">🌐</div>
+                                    <div class="feature-text">
+                                        <strong data-translate="global_access">Global Access</strong>
+                                        <p data-translate="global_access_desc">Your digital ID is accessible worldwide through secure blockchain network</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="consent-section">
+                            <div class="form-group">
+                                <label class="checkbox-container">
+                                    <input type="checkbox" id="data-consent" name="data_consent" required>
+                                    <span class="checkmark"></span>
+                                    <span class="consent-text" data-translate="data_consent">I consent to the secure processing and encrypted storage of my personal data for tourist safety purposes</span>
+                                </label>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="checkbox-container">
+                                    <input type="checkbox" id="blockchain-consent" name="blockchain_consent" required>
+                                    <span class="checkmark"></span>
+                                    <span class="consent-text" data-translate="blockchain_consent">I agree to store my digital ID on blockchain for tamper-proof verification</span>
+                                </label>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="checkbox-container">
+                                    <input type="checkbox" id="emergency-consent" name="emergency_consent" required>
+                                    <span class="checkmark"></span>
+                                    <span class="consent-text" data-translate="emergency_consent">I authorize sharing of emergency medical information with authorized personnel during emergencies</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="blockchain-status" id="blockchain-status" style="display: none;">
+                            <div class="status-indicator">
+                                <div class="spinner"></div>
+                                <span id="blockchain-status-text" data-translate="creating_blockchain_id">Creating blockchain digital ID...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation Buttons -->
+                <div class="form-navigation" style="display:flex; gap:12px; align-items:center;">
+                    <button type="button" class="btn btn-secondary" id="prev-btn" style="display:none;" data-translate="previous">Previous</button>
+                    <button type="button" class="btn btn-primary" id="next-btn" data-translate="next">Next</button>
+                    <button type="submit" class="btn btn-success" id="submit-btn" style="display:none;" data-translate="create_digital_id">Create Digital ID</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='common.js') }}"></script>
+    <script src="{{ url_for('static', filename='global-translation.js') }}"></script>
+    <script src="{{ url_for('static', filename='registration.js') }}"></script>
+    <script>
+        // Override changeLanguage to use global translation
+        function changeLanguage() {
+            const select = document.getElementById('language-select');
+            if (select && window.globalTranslationManager) {
+                window.globalTranslationManager.handleGlobalLanguageChange(select.value);
+            }
+        }
+
+        // Password show/hide toggle
+        (function(){
+            const toggle = document.getElementById('toggle-password');
+            const pwd = document.getElementById('account-password');
+            if(toggle && pwd){
+                toggle.addEventListener('click', ()=>{
+                    if(pwd.type === 'password') { pwd.type='text'; toggle.textContent='Hide'; }
+                    else { pwd.type='password'; toggle.textContent='Show'; }
+                });
+            }
+        })();
+    </script>
+</body>
+</html>

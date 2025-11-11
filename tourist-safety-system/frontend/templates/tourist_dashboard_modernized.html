@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tourist Dashboard - Smart Tourist Safety System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* Modern Design System */
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            --bg-primary: #f8fafc;
+            --bg-secondary: #ffffff;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --border-light: #e2e8f0;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 30px rgba(0,0,0,0.12);
+            --transition: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 20px 0;
+            box-shadow: var(--shadow-lg);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .header-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-info-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 32px 24px;
+        }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        /* Modern Card */
+        .card {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-light);
+            transition: all var(--transition);
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--border-light);
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Emergency Panic Button */
+        .panic-container {
+            text-align: center;
+            padding: 32px;
+            background: linear-gradient(135deg, #fee2e2, #fecaca);
+            border-radius: var(--radius-lg);
+            margin-bottom: 32px;
+        }
+
+        .panic-btn {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            border: 6px solid var(--danger);
+            background: linear-gradient(135deg, var(--danger), #dc2626);
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all var(--transition);
+            box-shadow: 0 8px 24px rgba(239,68,68,0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .panic-btn:hover:not(:disabled) {
+            transform: scale(1.05);
+            box-shadow: 0 12px 32px rgba(239,68,68,0.5);
+        }
+
+        .panic-btn:active:not(:disabled) {
+            transform: scale(0.98);
+        }
+
+        @keyframes pulse-ring {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        .panic-pulse {
+            position: absolute;
+            top: -6px;
+            left: -6px;
+            right: -6px;
+            bottom: -6px;
+            border: 4px solid var(--danger);
+            border-radius: 50%;
+            animation: pulse-ring 2s infinite;
+        }
+
+        /* Location Toggle Switch */
+        .location-toggle-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+            background: var(--bg-primary);
+            border-radius: var(--radius-md);
+            margin-bottom: 16px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 60px;
+            height: 32px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #cbd5e1;
+            transition: var(--transition);
+            border-radius: 34px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 24px;
+            width: 24px;
+            left: 4px;
+            bottom: 4px;
+            background: white;
+            transition: var(--transition);
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        input:checked + .toggle-slider {
+            background: var(--success);
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(28px);
+        }
+
+        .toggle-slider.loading {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Risk Level Indicator */
+        .risk-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: var(--radius-md);
+            font-weight: 700;
+            font-size: 0.9rem;
+            transition: all var(--transition);
+        }
+
+        .risk-low {
+            background: rgba(16,185,129,0.1);
+            color: var(--success);
+            border: 2px solid rgba(16,185,129,0.3);
+        }
+
+        .risk-medium {
+            background: rgba(245,158,11,0.1);
+            color: var(--warning);
+            border: 2px solid rgba(245,158,11,0.3);
+        }
+
+        .risk-high {
+            background: rgba(239,68,68,0.1);
+            color: var(--danger);
+            border: 2px solid rgba(239,68,68,0.3);
+            animation: pulse-risk 2s infinite;
+        }
+
+        @keyframes pulse-risk {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* Status Icons */
+        .status-icon {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            animation: blink 2s infinite;
+        }
+
+        .status-icon.active {
+            background: var(--success);
+        }
+
+        .status-icon.inactive {
+            background: var(--text-muted);
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Modern Button */
+        .btn {
+            padding: 12px 24px;
+            border-radius: var(--radius-md);
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            box-shadow: 0 4px 12px rgba(99,102,241,0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(99,102,241,0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger), #dc2626);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success), #059669);
+            color: white;
+        }
+
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            top: 90px;
+            right: 24px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .toast {
+            background: white;
+            border-radius: var(--radius-md);
+            padding: 16px 20px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideIn 0.4s;
+            min-width: 300px;
+            border-left: 4px solid;
+        }
+
+        .toast-success { border-left-color: var(--success); }
+        .toast-error { border-left-color: var(--danger); }
+        .toast-warning { border-left-color: var(--warning); }
+        .toast-info { border-left-color: var(--info); }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Emergency Quick Actions Grid */
+        .emergency-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 16px;
+        }
+
+        .emergency-btn {
+            padding: 20px;
+            border-radius: var(--radius-md);
+            border: 2px solid var(--border-light);
+            background: white;
+            cursor: pointer;
+            transition: all var(--transition);
+            text-align: center;
+        }
+
+        .emergency-btn:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .emergency-icon {
+            font-size: 2.5rem;
+            margin-bottom: 8px;
+        }
+
+        /* Loading State */
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-container {
+                flex-direction: column;
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .panic-btn {
+                width: 160px;
+                height: 160px;
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <div class="header-title">
+                <i class="fas fa-shield-alt"></i>
+                <span>Tourist Safety Dashboard</span>
+            </div>
+            <div class="user-info-header">
+                <div class="user-avatar" id="userAvatar">{{ tourist_name[0] if tourist_name else 'T' }}</div>
+                <div>
+                    <div style="font-weight: 700;">{{ tourist_name }}</div>
+                    <div style="font-size: 0.85rem; opacity: 0.9;">ID: {{ tourist_id }}</div>
+                </div>
+            </div>
+            <select id="language-select" onchange="switchLanguage(this.value)" style="padding: 8px 12px; border-radius: 8px; border: 2px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: white;">
+                <option value="en">English</option>
+                <option value="hi">हिंदी</option>
+                <option value="ta">தமிழ்</option>
+            </select>
+            <a href="/" style="color: white; text-decoration: none; font-weight: 600;">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Emergency Panic Button -->
+        <div class="panic-container">
+            <button id="panic-button" class="panic-btn" onclick="confirmPanicAlert()">
+                <div class="panic-pulse"></div>
+                <div style="position: relative; z-index: 1;">
+                    <div style="font-size: 3rem;">🚨</div>
+                    <div>EMERGENCY</div>
+                </div>
+            </button>
+            <p style="margin-top: 16px; color: var(--text-secondary);">
+                Tap to send instant alert to emergency services
+            </p>
+        </div>
+
+        <!-- Dashboard Cards Grid -->
+        <div class="dashboard-grid">
+            <!-- Location Sharing Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-map-marker-alt" style="color: var(--primary);"></i>
+                        Location Sharing
+                    </h3>
+                    <span class="risk-indicator risk-low" id="riskIndicator">
+                        <i class="fas fa-shield-alt"></i>
+                        <span id="riskLevel">Low Risk</span>
+                    </span>
+                </div>
+                
+                <!-- Real-time Location Toggle -->
+                <div class="location-toggle-container">
+                    <div>
+                        <div style="font-weight: 600; margin-bottom: 4px;">
+                            <span class="status-icon active" id="locationStatusIcon"></span>
+                            Real-time Tracking
+                        </div>
+                        <div style="font-size: 0.85rem; color: var(--text-muted);" id="locationStatusText">
+                            Location sharing active
+                        </div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="locationToggle" checked onchange="toggleLocationSharing(this)">
+                        <span class="toggle-slider" id="toggleSlider"></span>
+                    </label>
+                </div>
+
+                <div id="location-info" style="padding: 16px; background: var(--bg-primary); border-radius: var(--radius-md); margin-top: 16px;">
+                    <p style="color: var(--text-muted);">Getting your location...</p>
+                </div>
+
+                <button onclick="updateLocation()" class="btn btn-primary" style="width: 100%; margin-top: 16px;">
+                    <i class="fas fa-sync-alt"></i>
+                    Update Location Now
+                </button>
+            </div>
+
+            <!-- Safety Status Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-heartbeat" style="color: var(--success);"></i>
+                        Safety Status
+                    </h3>
+                </div>
+
+                <div id="safety-status" style="text-align: center; padding: 32px;">
+                    <div style="font-size: 4rem; margin-bottom: 16px;">✅</div>
+                    <div style="font-size: 1.2rem; font-weight: 700; color: var(--success);">
+                        You're Safe
+                    </div>
+                    <div style="color: var(--text-muted); margin-top: 8px;">
+                        No threats detected in your area
+                    </div>
+                </div>
+            </div>
+
+            <!-- Emergency Contacts Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-phone-alt" style="color: var(--danger);"></i>
+                        Quick Emergency
+                    </h3>
+                </div>
+
+                <div class="emergency-grid">
+                    <button onclick="callEmergency('100')" class="emergency-btn">
+                        <div class="emergency-icon">🚔</div>
+                        <div style="font-weight: 600;">Police</div>
+                        <div style="font-size: 0.85rem; color: var(--text-muted);">100</div>
+                    </button>
+                    <button onclick="callEmergency('108')" class="emergency-btn">
+                        <div class="emergency-icon">🚑</div>
+                        <div style="font-weight: 600;">Ambulance</div>
+                        <div style="font-size: 0.85rem; color: var(--text-muted);">108</div>
+                    </button>
+                    <button onclick="callEmergency('101')" class="emergency-btn">
+                        <div class="emergency-icon">🚒</div>
+                        <div style="font-weight: 600;">Fire</div>
+                        <div style="font-size: 0.85rem; color: var(--text-muted);">101</div>
+                    </button>
+                    <button onclick="sendSilentAlert()" class="emergency-btn">
+                        <div class="emergency-icon">🔇</div>
+                        <div style="font-weight: 600;">Silent Alert</div>
+                        <div style="font-size: 0.85rem; color: var(--text-muted);">Discreet</div>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alerts Section -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-bell" style="color: var(--warning);"></i>
+                    Alerts & Notifications
+                </h3>
+            </div>
+            <div id="alerts-container" style="min-height: 60px;">
+                <p style="text-align: center; color: var(--text-muted); padding: 20px;">No alerts at this time</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const touristId = parseInt('{{ tourist_id }}');
+        let currentLocation = null;
+        let locationSharingEnabled = true;
+        let locationTrackingInterval = null;
+        let riskLevel = 'low'; // low, medium, high
+
+        // Initialize on page load
+        window.addEventListener('load', function() {
+            updateLocation();
+            startLocationTracking();
+            checkRiskLevel();
+        });
+
+        /**
+         * Toggle Location Sharing with Backend Update
+         */
+        async function toggleLocationSharing(checkbox) {
+            const slider = document.getElementById('toggleSlider');
+            const statusIcon = document.getElementById('locationStatusIcon');
+            const statusText = document.getElementById('locationStatusText');
+            
+            // Show loading state
+            slider.classList.add('loading');
+            checkbox.disabled = true;
+
+            try {
+                const response = await fetch('/api/toggle_location_sharing', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        tourist_id: touristId,
+                        enabled: checkbox.checked
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    locationSharingEnabled = checkbox.checked;
+                    
+                    // Update UI
+                    if (checkbox.checked) {
+                        statusIcon.classList.add('active');
+                        statusIcon.classList.remove('inactive');
+                        statusText.textContent = 'Location sharing active';
+                        showToast('Location sharing enabled', 'success');
+                        startLocationTracking();
+                    } else {
+                        statusIcon.classList.remove('active');
+                        statusIcon.classList.add('inactive');
+                        statusText.textContent = 'Location sharing paused';
+                        showToast('Location sharing disabled', 'info');
+                        stopLocationTracking();
+                    }
+                } else {
+                    // Revert checkbox on failure
+                    checkbox.checked = !checkbox.checked;
+                    showToast('Failed to update location sharing', 'error');
+                }
+            } catch (error) {
+                console.error('Error toggling location sharing:', error);
+                checkbox.checked = !checkbox.checked;
+                showToast('Network error. Please try again.', 'error');
+            } finally {
+                slider.classList.remove('loading');
+                checkbox.disabled = false;
+            }
+        }
+
+        /**
+         * Update Location with Enhanced Feedback
+         */
+        function updateLocation() {
+            if (!locationSharingEnabled) {
+                showToast('Location sharing is disabled', 'warning');
+                return;
+            }
+
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        currentLocation = {
+                            latitude: position.coords.latitude,
+                            longitude: position.coords.longitude,
+                            accuracy: position.coords.accuracy
+                        };
+                        
+                        updateLocationDisplay();
+                        sendLocationUpdate();
+                        checkRiskLevel(); // Update risk based on location
+                    },
+                    function(error) {
+                        console.error('Error getting location:', error);
+                        document.getElementById('location-info').innerHTML = 
+                            '<p style="color: var(--danger);">Unable to get location. Please enable location services.</p>';
+                    }
+                );
+            } else {
+                document.getElementById('location-info').innerHTML = 
+                    '<p style="color: var(--danger);">Geolocation is not supported by your browser</p>';
+            }
+        }
+
+        /**
+         * Display Location with Better Formatting
+         */
+        function updateLocationDisplay() {
+            if (currentLocation) {
+                const timestamp = new Date().toLocaleString();
+                document.getElementById('location-info').innerHTML = `
+                    <div style="display: grid; gap: 8px;">
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="color: var(--text-muted);">Latitude:</span>
+                            <span style="font-weight: 600;">${currentLocation.latitude.toFixed(6)}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="color: var(--text-muted);">Longitude:</span>
+                            <span style="font-weight: 600;">${currentLocation.longitude.toFixed(6)}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="color: var(--text-muted);">Accuracy:</span>
+                            <span style="font-weight: 600;">±${Math.round(currentLocation.accuracy)}m</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="color: var(--text-muted);">Updated:</span>
+                            <span style="font-weight: 600; font-size: 0.85rem;">${timestamp}</span>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        /**
+         * Send Location Update to Backend
+         */
+        async function sendLocationUpdate() {
+            if (!currentLocation || !locationSharingEnabled) return;
+
+            try {
+                const response = await fetch('/api/update_location', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        tourist_id: touristId,
+                        latitude: currentLocation.latitude,
+                        longitude: currentLocation.longitude,
+                        accuracy: currentLocation.accuracy,
+                        timestamp: new Date().toISOString()
+                    })
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Update risk level if provided by backend
+                    if (result.risk_level) {
+                        updateRiskIndicator(result.risk_level);
+                    }
+                }
+            } catch (error) {
+                console.error('Error updating location:', error);
+            }
+        }
+
+        /**
+         * Check and Update Risk Level
+         */
+        async function checkRiskLevel() {
+            try {
+                const response = await fetch(`/api/get_risk_level/${touristId}`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    updateRiskIndicator(result.risk_level);
+                }
+            } catch (error) {
+                console.error('Error checking risk level:', error);
+            }
+        }
+
+        /**
+         * Update Risk Level Indicator
+         */
+        function updateRiskIndicator(level) {
+            const indicator = document.getElementById('riskIndicator');
+            const riskLevelText = document.getElementById('riskLevel');
+            
+            // Remove all risk classes
+            indicator.classList.remove('risk-low', 'risk-medium', 'risk-high');
+            
+            // Add appropriate class and update text
+            switch(level.toLowerCase()) {
+                case 'low':
+                    indicator.classList.add('risk-low');
+                    riskLevelText.innerHTML = '<i class="fas fa-shield-alt"></i> Low Risk';
+                    break;
+                case 'medium':
+                    indicator.classList.add('risk-medium');
+                    riskLevelText.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Medium Risk';
+                    break;
+                case 'high':
+                    indicator.classList.add('risk-high');
+                    riskLevelText.innerHTML = '<i class="fas fa-exclamation-circle"></i> High Risk';
+                    showToast('High risk area detected! Stay alert.', 'warning');
+                    break;
+            }
+            
+            riskLevel = level.toLowerCase();
+        }
+
+        /**
+         * Panic Alert with Enhanced UX
+         */
+        async function confirmPanicAlert() {
+            if (confirm('🚨 Send EMERGENCY ALERT to authorities?\n\nYour location will be immediately shared with emergency services.')) {
+                await sendPanicAlert();
+            }
+        }
+
+        async function sendPanicAlert() {
+            if (!currentLocation) {
+                alert('Please allow location access first');
+                updateLocation();
+                return;
+            }
+
+            const panicButton = document.getElementById('panic-button');
+            panicButton.disabled = true;
+            panicButton.innerHTML = '<div class="loading"></div><div style="margin-top: 8px;">Sending...</div>';
+
+            try {
+                const response = await fetch('/api/panic_alert', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        tourist_id: touristId,
+                        latitude: currentLocation.latitude,
+                        longitude: currentLocation.longitude
+                    })
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    showToast('🚨 Emergency alert sent successfully!', 'success');
+                    showEmergencyContactsModal();
+                } else {
+                    showToast('Failed to send alert. Please try again.', 'error');
+                }
+            } catch (error) {
+                console.error('Error sending panic alert:', error);
+                showToast('Network error. Please call emergency services directly.', 'error');
+            } finally {
+                panicButton.disabled = false;
+                panicButton.innerHTML = '<div class="panic-pulse"></div><div style="position: relative; z-index: 1;"><div style="font-size: 3rem;">🚨</div><div>EMERGENCY</div></div>';
+            }
+        }
+
+        /**
+         * Send Silent Alert
+         */
+        async function sendSilentAlert() {
+            if (!currentLocation) {
+                updateLocation();
+                setTimeout(sendSilentAlert, 2000);
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/panic_alert', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        tourist_id: touristId,
+                        latitude: currentLocation.latitude,
+                        longitude: currentLocation.longitude,
+                        silent: true
+                    })
+                });
+
+                if (response.ok) {
+                    showToast('✓ Silent alert sent discreetly', 'success');
+                }
+            } catch (error) {
+                console.error('Error sending silent alert:', error);
+            }
+        }
+
+        /**
+         * Call Emergency Number
+         */
+        function callEmergency(number) {
+            if (confirm(`Call emergency number ${number}?`)) {
+                window.location.href = `tel:${number}`;
+                showToast(`Calling ${number}...`, 'info');
+            }
+        }
+
+        /**
+         * Show Emergency Contacts Modal
+         */
+        function showEmergencyContactsModal() {
+            const modal = document.createElement('div');
+            modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:10000;';
+            modal.innerHTML = `
+                <div style="background:white;border-radius:16px;padding:32px;max-width:400px;width:90%;">
+                    <h3 style="margin-bottom:16px;color:var(--danger);">🚨 Emergency Alert Sent!</h3>
+                    <p style="margin-bottom:24px;color:var(--text-secondary);">Your location has been shared. Help is on the way.</p>
+                    <div style="display:grid;gap:12px;">
+                        <button onclick="callEmergency('100')" class="btn btn-primary" style="width:100%;">🚔 Call Police (100)</button>
+                        <button onclick="callEmergency('108')" class="btn btn-primary" style="width:100%;">🚑 Call Ambulance (108)</button>
+                        <button onclick="this.closest('div[style*=fixed]').remove()" class="btn" style="width:100%;background:var(--bg-primary);color:var(--text-primary);">Close</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            setTimeout(() => modal.remove(), 15000);
+        }
+
+        /**
+         * Location Tracking
+         */
+        function startLocationTracking() {
+            if (locationTrackingInterval) {
+                clearInterval(locationTrackingInterval);
+            }
+            // Update every 5 minutes
+            locationTrackingInterval = setInterval(updateLocation, 5 * 60 * 1000);
+        }
+
+        function stopLocationTracking() {
+            if (locationTrackingInterval) {
+                clearInterval(locationTrackingInterval);
+                locationTrackingInterval = null;
+            }
+        }
+
+        /**
+         * Toast Notifications
+         */
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            
+            const icons = {
+                success: 'fa-check-circle',
+                error: 'fa-exclamation-circle',
+                warning: 'fa-exclamation-triangle',
+                info: 'fa-info-circle'
+            };
+            
+            toast.innerHTML = `
+                <i class="fas ${icons[type]}" style="font-size:1.2rem;color:var(--${type});"></i>
+                <span style="flex:1;">${message}</span>
+                <button onclick="this.parentElement.remove()" style="background:none;border:none;cursor:pointer;font-size:1.2rem;color:var(--text-muted);">×</button>
+            `;
+            
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 5000);
+        }
+
+        /**
+         * Language Switcher (placeholder)
+         */
+        function switchLanguage(lang) {
+            showToast('Language switching coming soon', 'info');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Tourist ID - Tourist Safety System</title>
+    <link rel="stylesheet" href="../static/common.css">
+    <link rel="stylesheet" href="../static/digital-id.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="../static/common.js"></script>
+    <script src="../static/digital-id.js" defer></script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-shield-alt"></i>
+                    <span data-translate="app_name">Tourist Safety</span>
+                </div>
+                <nav class="nav">
+                    <a href="dashboard.html" data-translate="dashboard">Dashboard</a>
+                    <a href="registration.html" data-translate="register">Register</a>
+                    <a href="app_download.html" data-translate="download">Download</a>
+                    <a href="digital_id.html" class="active" data-translate="digital_id">Digital ID</a>
+                </nav>
+                <div class="header-actions">
+                    <select id="languageSelector" class="language-selector">
+                        <option value="en">English</option>
+                        <option value="es">Español</option>
+                        <option value="fr">Français</option>
+                        <option value="de">Deutsch</option>
+                        <option value="it">Italiano</option>
+                        <option value="pt">Português</option>
+                        <option value="ru">Русский</option>
+                        <option value="zh">中文</option>
+                        <option value="ja">日本語</option>
+                        <option value="ko">한국어</option>
+                        <option value="ar">العربية</option>
+                        <option value="hi">हिन्दी</option>
+                    </select>
+                    <button class="emergency-btn">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span data-translate="emergency">Emergency</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Digital ID Header -->
+            <div class="id-header">
+                <h1 data-translate="digital_tourist_id">Digital Tourist ID</h1>
+                <p data-translate="id_description">Your secure, blockchain-verified digital identity for tourism</p>
+            </div>
+
+            <!-- ID Card Display -->
+            <div class="id-card-container">
+                <div class="id-card" id="digitalIdCard">
+                    <!-- Card Front -->
+                    <div class="card-face card-front">
+                        <!-- Card Header -->
+                        <div class="card-header">
+                            <div class="card-logo">
+                                <i class="fas fa-passport"></i>
+                            </div>
+                            <div class="card-title">
+                                <h3>DIGITAL TOURIST ID</h3>
+                                <p>Republic of Tourism</p>
+                            </div>
+                            <div class="card-flag">
+                                <i class="fas fa-flag"></i>
+                            </div>
+                        </div>
+
+                        <!-- Photo and Basic Info -->
+                        <div class="card-body">
+                            <div class="photo-section">
+                                <div class="photo-frame">
+                                    <img id="touristPhoto" src="../static/images/default-avatar.png" alt="Tourist Photo">
+                                    <div class="photo-overlay">
+                                        <i class="fas fa-camera"></i>
+                                    </div>
+                                </div>
+                                <div class="verification-badge">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>VERIFIED</span>
+                                </div>
+                            </div>
+
+                            <div class="info-section">
+                                <div class="primary-info">
+                                    <h2 id="touristName">JOHN SMITH</h2>
+                                    <p class="nationality">
+                                        <i class="fas fa-globe-americas"></i>
+                                        <span id="touristNationality">United States</span>
+                                    </p>
+                                </div>
+
+                                <div class="details-grid">
+                                    <div class="detail-item">
+                                        <label>ID Number</label>
+                                        <span id="idNumber">TST-001234567</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label>Date of Birth</label>
+                                        <span id="dateOfBirth">15/03/1990</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label>Valid Until</label>
+                                        <span id="expiryDate">15/03/2025</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label>Emergency Level</label>
+                                        <span id="emergencyLevel" class="status-normal">NORMAL</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- QR Code Section -->
+                        <div class="card-footer">
+                            <div class="qr-section">
+                                <div class="qr-code" id="idQrCode">
+                                    <div class="qr-placeholder">
+                                        <i class="fas fa-qrcode"></i>
+                                    </div>
+                                </div>
+                                <div class="qr-info">
+                                    <p>Scan for verification</p>
+                                    <small>Blockchain secured</small>
+                                </div>
+                            </div>
+                            <div class="blockchain-info">
+                                <div class="blockchain-status">
+                                    <i class="fas fa-link"></i>
+                                    <span>Blockchain Verified</span>
+                                </div>
+                                <div class="block-hash">
+                                    <small id="blockHash">Block: #abc123...</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card Back -->
+                    <div class="card-face card-back">
+                        <!-- Emergency Contacts -->
+                        <div class="back-section">
+                            <h4><i class="fas fa-phone-alt"></i> Emergency Contacts</h4>
+                            <div class="contact-list" id="emergencyContacts">
+                                <div class="contact-item">
+                                    <strong>Primary:</strong> Jane Smith (+1-555-0123)
+                                </div>
+                                <div class="contact-item">
+                                    <strong>Secondary:</strong> Bob Smith (+1-555-0456)
+                                </div>
+                                <div class="contact-item">
+                                    <strong>Local Embassy:</strong> +1-555-EMBASSY
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Medical Information -->
+                        <div class="back-section">
+                            <h4><i class="fas fa-heartbeat"></i> Medical Information</h4>
+                            <div class="medical-info" id="medicalInfo">
+                                <div class="medical-item">
+                                    <strong>Blood Type:</strong> <span id="bloodType">O+</span>
+                                </div>
+                                <div class="medical-item">
+                                    <strong>Allergies:</strong> <span id="allergies">None known</span>
+                                </div>
+                                <div class="medical-item">
+                                    <strong>Medications:</strong> <span id="medications">None</span>
+                                </div>
+                                <div class="medical-item">
+                                    <strong>Conditions:</strong> <span id="conditions">None</span>
+                                </div>
+                                <div class="medical-item">
+                                    <strong>Insurance:</strong> <span id="insurance">Global Travel Insurance</span>
+                                </div>
+                                <div class="medical-item" id="medicalNotesContainer" style="display: none;">
+                                    <strong>Notes:</strong> <span id="medicalNotes"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Travel Information -->
+                        <div class="back-section">
+                            <h4><i class="fas fa-plane"></i> Travel Information</h4>
+                            <div class="travel-info" id="travelInfo">
+                                <div class="travel-item">
+                                    <strong>Destination:</strong> <span id="destination">Multiple Countries</span>
+                                </div>
+                                <div class="travel-item">
+                                    <strong>Duration:</strong> <span id="duration">14 days</span>
+                                </div>
+                                <div class="travel-item">
+                                    <strong>Purpose:</strong> <span id="purpose">Tourism</span>
+                                </div>
+                                <div class="travel-item">
+                                    <strong>Accommodation:</strong> <span id="accommodation">Hotel Booking Confirmed</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Additional QR Code -->
+                        <div class="back-footer">
+                            <div class="backup-qr">
+                                <div class="qr-code small" id="backupQrCode">
+                                    <div class="qr-placeholder">
+                                        <i class="fas fa-qrcode"></i>
+                                    </div>
+                                </div>
+                                <small>Backup verification code</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card Controls -->
+                <div class="card-controls">
+                    <button class="control-btn" id="flipCard">
+                        <i class="fas fa-sync-alt"></i>
+                        <span>Flip Card</span>
+                    </button>
+                    <button class="control-btn" id="downloadCard">
+                        <i class="fas fa-download"></i>
+                        <span>Download</span>
+                    </button>
+                    <button class="control-btn" id="shareCard">
+                        <i class="fas fa-share"></i>
+                        <span>Share</span>
+                    </button>
+                    <button class="control-btn" id="verifyCard">
+                        <i class="fas fa-shield-check"></i>
+                        <span>Verify</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ID Features -->
+            <div class="id-features">
+                <h2>Digital ID Features</h2>
+                <div class="features-grid">
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        <h3>Blockchain Secured</h3>
+                        <p>Your ID is stored on a tamper-proof blockchain network ensuring maximum security and authenticity.</p>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-qrcode"></i>
+                        </div>
+                        <h3>QR Verification</h3>
+                        <p>Instant verification through QR codes that can be scanned by authorities and service providers.</p>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h3>Data Encryption</h3>
+                        <p>All personal information is encrypted with military-grade AES-256 encryption protocols.</p>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <h3>Mobile Access</h3>
+                        <p>Access your digital ID anytime, anywhere through our mobile app or web interface.</p>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-globe"></i>
+                        </div>
+                        <h3>Global Recognition</h3>
+                        <p>Accepted by tourism authorities and emergency services in participating countries worldwide.</p>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-history"></i>
+                        </div>
+                        <h3>Audit Trail</h3>
+                        <p>Complete history of ID verification and usage with blockchain-based audit trail.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Verification Status -->
+            <div class="verification-status">
+                <h2>Verification Status</h2>
+                <div class="status-grid">
+                    <div class="status-item verified">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Identity Verified</span>
+                        <small>Verified on 15/03/2024</small>
+                    </div>
+                    <div class="status-item verified">
+                        <i class="fas fa-passport"></i>
+                        <span>Travel Documents</span>
+                        <small>Valid until 15/03/2030</small>
+                    </div>
+                    <div class="status-item verified">
+                        <i class="fas fa-heartbeat"></i>
+                        <span>Medical Information</span>
+                        <small>Updated 10/03/2024</small>
+                    </div>
+                    <div class="status-item pending">
+                        <i class="fas fa-clock"></i>
+                        <span>Emergency Contacts</span>
+                        <small>Pending verification</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Usage History -->
+            <div class="usage-history">
+                <h2>Recent Verification History</h2>
+                <div class="history-list">
+                    <div class="history-item">
+                        <div class="history-icon">
+                            <i class="fas fa-hotel"></i>
+                        </div>
+                        <div class="history-details">
+                            <strong>Hotel Check-in</strong>
+                            <p>Grand Plaza Hotel, Paris</p>
+                            <small>Today, 2:30 PM</small>
+                        </div>
+                        <div class="history-status success">
+                            <i class="fas fa-check"></i>
+                        </div>
+                    </div>
+                    <div class="history-item">
+                        <div class="history-icon">
+                            <i class="fas fa-plane"></i>
+                        </div>
+                        <div class="history-details">
+                            <strong>Airport Security</strong>
+                            <p>Charles de Gaulle Airport</p>
+                            <small>Yesterday, 8:15 AM</small>
+                        </div>
+                        <div class="history-status success">
+                            <i class="fas fa-check"></i>
+                        </div>
+                    </div>
+                    <div class="history-item">
+                        <div class="history-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="history-details">
+                            <strong>Tourist Information</strong>
+                            <p>Louvre Museum</p>
+                            <small>Yesterday, 11:45 AM</small>
+                        </div>
+                        <div class="history-status success">
+                            <i class="fas fa-check"></i>
+                        </div>
+                    </div>
+                </div>
+                <button class="view-all-btn">View All History</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4 data-translate="about">About</h4>
+                    <p data-translate="footer_about">Tourist Safety System provides comprehensive safety solutions for travelers worldwide.</p>
+                </div>
+                <div class="footer-section">
+                    <h4 data-translate="quick_links">Quick Links</h4>
+                    <ul>
+                        <li><a href="dashboard.html" data-translate="dashboard">Dashboard</a></li>
+                        <li><a href="registration.html" data-translate="register">Register</a></li>
+                        <li><a href="app_download.html" data-translate="download">Download</a></li>
+                        <li><a href="digital_id.html" data-translate="digital_id">Digital ID</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4 data-translate="support">Support</h4>
+                    <ul>
+                        <li><a href="mailto:support@touristsafety.com">support@touristsafety.com</a></li>
+                        <li><a href="tel:+1-800-TOURIST">+1-800-TOURIST</a></li>
+                        <li><a href="#" data-translate="help_center">Help Center</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4 data-translate="follow_us">Follow Us</h4>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Tourist Safety System. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

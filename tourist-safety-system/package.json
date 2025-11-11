@@ -1,0 +1,30 @@
+{
+  "name": "tourist-safety-system",
+  "version": "1.0.0",
+  "description": "Smart Tourist Safety Monitoring System",
+  "main": "backend/app.py",
+  "scripts": {
+    "start": "cd backend && python app.py",
+    "dev": "cd backend && python app.py",
+    "test": "python -m pytest tests/",
+    "docker:build": "docker build -t tourist-safety-system .",
+    "docker:run": "docker run -p 5000:5000 tourist-safety-system",
+    "docker:compose": "docker-compose up -d"
+  },
+  "keywords": [
+    "tourist",
+    "safety",
+    "monitoring",
+    "flask",
+    "python",
+    "sos",
+    "geofencing",
+    "blockchain"
+  ],
+  "author": "SIH 2025 Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/your-username/tourist-safety-system.git"
+  }
+}

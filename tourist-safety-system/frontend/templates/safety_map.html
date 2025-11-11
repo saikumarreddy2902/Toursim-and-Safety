@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Safety Map - Real-Time Location Tracking</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+        }
+
+        #map {
+            height: 100vh;
+            width: 100%;
+        }
+
+        .map-overlay {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            max-width: 350px;
+        }
+
+        .map-overlay h2 {
+            margin-bottom: 15px;
+            color: #2d3436;
+            font-size: 1.5em;
+        }
+
+        .status-item {
+            margin: 10px 0;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-icon {
+            font-size: 1.8em;
+        }
+
+        .status-text strong {
+            display: block;
+            margin-bottom: 3px;
+            color: #2d3436;
+        }
+
+        .status-text span {
+            color: #636e72;
+            font-size: 0.9em;
+        }
+
+        .legend {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 8px 0;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+        }
+
+        .safe-zone { background: #00b894; }
+        .restricted-zone { background: #d63031; }
+        .current-location { background: #0984e3; }
+
+        .refresh-btn {
+            width: 100%;
+            padding: 12px;
+            margin-top: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .refresh-btn:hover {
+            transform: scale(1.02);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            font-size: 1.2em;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+        }
+
+        .close-btn:hover {
+            background: #ee5a6f;
+        }
+
+        .loading {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+            z-index: 2000;
+            text-align: center;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Custom marker icons */
+        .pulse-marker {
+            display: block;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #0984e3;
+            border: 3px solid white;
+            box-shadow: 0 0 0 rgba(9, 132, 227, 0.4);
+            animation: pulse-animation 2s infinite;
+        }
+
+        @keyframes pulse-animation {
+            0% {
+                box-shadow: 0 0 0 0 rgba(9, 132, 227, 0.7);
+            }
+            50% {
+                box-shadow: 0 0 0 15px rgba(9, 132, 227, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(9, 132, 227, 0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+
+    <div class="map-overlay">
+        <button class="close-btn" onclick="window.close()" title="Close Map">✕</button>
+        <h2>🗺️ Safety Map</h2>
+        
+        <div class="status-item">
+            <div class="status-icon">📍</div>
+            <div class="status-text">
+                <strong>Your Location</strong>
+                <span id="currentCoords">Getting location...</span>
+            </div>
+        </div>
+
+        <div class="status-item">
+            <div class="status-icon">🛡️</div>
+            <div class="status-text">
+                <strong>Zone Status</strong>
+                <span id="zoneStatus">Checking...</span>
+            </div>
+        </div>
+
+        <div class="status-item">
+            <div class="status-icon">⏱️</div>
+            <div class="status-text">
+                <strong>Last Updated</strong>
+                <span id="lastUpdate">Just now</span>
+            </div>
+        </div>
+
+        <div class="legend">
+            <strong style="display: block; margin-bottom: 10px;">Map Legend</strong>
+            <div class="legend-item">
+                <div class="legend-color current-location"></div>
+                <span>Your Current Location</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color safe-zone"></div>
+                <span>Safe Zones</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color restricted-zone"></div>
+                <span>Restricted Zones</span>
+            </div>
+        </div>
+
+        <button class="refresh-btn" onclick="refreshLocation()">🔄 Refresh Location</button>
+    </div>
+
+    <div class="loading" id="loadingOverlay">
+        <div class="spinner"></div>
+        <p>Loading map data...</p>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        let map;
+        let currentMarker;
+        let safeZones = [];
+        let restrictedZones = [];
+        let locationHistory = [];
+
+        // Initialize map
+        function initMap() {
+            // Default center (will be updated with user's location)
+            map = L.map('map').setView([20.5937, 78.9629], 5); // India center
+
+            // Add OpenStreetMap tiles
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors',
+                maxZoom: 19
+            }).addTo(map);
+
+            // Get user's current location
+            getUserLocation();
+
+            // Load safe and restricted zones
+            loadZones();
+
+            // Load location history
+            loadLocationHistory();
+        }
+
+        function getUserLocation() {
+            if (navigator.geolocation) {
+                document.getElementById('loadingOverlay').classList.add('active');
+                
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const lat = position.coords.latitude;
+                        const lng = position.coords.longitude;
+
+                        // Update coordinates display
+                        document.getElementById('currentCoords').textContent = 
+                            `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+
+                        // Center map on user location
+                        map.setView([lat, lng], 15);
+
+                        // Add pulsing marker for current location
+                        if (currentMarker) {
+                            map.removeLayer(currentMarker);
+                        }
+
+                        const pulseIcon = L.divIcon({
+                            className: 'pulse-marker',
+                            iconSize: [30, 30]
+                        });
+
+                        currentMarker = L.marker([lat, lng], { icon: pulseIcon })
+                            .addTo(map)
+                            .bindPopup('<strong>📍 You are here!</strong><br>Current Location')
+                            .openPopup();
+
+                        // Check zone status
+                        checkZoneStatus(lat, lng);
+
+                        // Update last update time
+                        document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
+
+                        document.getElementById('loadingOverlay').classList.remove('active');
+                    },
+                    (error) => {
+                        console.error('Geolocation error:', error);
+                        document.getElementById('currentCoords').textContent = 'Location unavailable';
+                        document.getElementById('loadingOverlay').classList.remove('active');
+                        alert('Unable to get your location. Please enable location services.');
+                    }
+                );
+            } else {
+                alert('Geolocation is not supported by your browser.');
+            }
+        }
+
+        function loadZones() {
+            // Load safe zones
+            fetch('/api/zones/safe')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.zones) {
+                        data.zones.forEach(zone => {
+                            const circle = L.circle([zone.center_lat, zone.center_lng], {
+                                color: '#00b894',
+                                fillColor: '#00b894',
+                                fillOpacity: 0.2,
+                                radius: zone.radius_meters || 1000
+                            }).addTo(map);
+
+                            circle.bindPopup(`<strong>🛡️ Safe Zone</strong><br>${zone.name || 'Safe Area'}`);
+                            safeZones.push(circle);
+                        });
+                    }
+                })
+                .catch(error => console.error('Error loading safe zones:', error));
+
+            // Load restricted zones
+            fetch('/api/zones/restricted')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.zones) {
+                        data.zones.forEach(zone => {
+                            const circle = L.circle([zone.center_lat, zone.center_lng], {
+                                color: '#d63031',
+                                fillColor: '#d63031',
+                                fillOpacity: 0.3,
+                                radius: zone.radius_meters || 1000
+                            }).addTo(map);
+
+                            circle.bindPopup(`<strong>⚠️ Restricted Zone</strong><br>${zone.name || 'Avoid This Area'}<br><small>${zone.reason || ''}</small>`);
+                            restrictedZones.push(circle);
+                        });
+                    }
+                })
+                .catch(error => console.error('Error loading restricted zones:', error));
+        }
+
+        function loadLocationHistory() {
+            // Get user ID from session (would need to be passed from backend)
+            const userId = '{{ user.user_id }}';
+            if (!userId) return;
+
+            fetch(`/api/location/history/${userId}?limit=50`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.history) {
+                        const coords = data.history.map(loc => [loc.latitude, loc.longitude]);
+                        
+                        if (coords.length > 1) {
+                            // Draw polyline showing journey
+                            const polyline = L.polyline(coords, {
+                                color: '#0984e3',
+                                weight: 3,
+                                opacity: 0.6,
+                                dashArray: '10, 5'
+                            }).addTo(map);
+
+                            polyline.bindPopup('<strong>📊 Your Journey</strong><br>Recent travel path');
+                        }
+                    }
+                })
+                .catch(error => console.error('Error loading location history:', error));
+        }
+
+        function checkZoneStatus(lat, lng) {
+            fetch('/api/location/track', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    tourist_id: '{{ user.user_id }}',
+                    latitude: lat,
+                    longitude: lng,
+                    timestamp: new Date().toISOString()
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                let statusText = '✅ Safe Zone';
+                
+                if (data.zone_breach) {
+                    if (data.zone_breach.is_inside_restricted_zone) {
+                        statusText = '⚠️ RESTRICTED ZONE - Leave immediately!';
+                    } else if (!data.zone_breach.is_inside_safe_zone) {
+                        statusText = '⚡ Outside Safe Zones - Be cautious';
+                    }
+                }
+                
+                document.getElementById('zoneStatus').textContent = statusText;
+            })
+            .catch(error => console.error('Zone status check error:', error));
+        }
+
+        function refreshLocation() {
+            getUserLocation();
+        }
+
+        // Initialize map on page load
+        window.onload = initMap;
+
+        // Auto-refresh location every 30 seconds
+        setInterval(refreshLocation, 30000);
+    </script>
+</body>
+</html>

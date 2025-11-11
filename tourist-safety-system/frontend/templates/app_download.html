@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download App - Smart Tourist Safety System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='download.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 data-translate="download_app_title">📱 Download Tourist Safety App</h1>
+            <div class="language-switcher">
+                <select id="language-select" class="language-selector" onchange="changeLanguage()">
+                    <option value="en">English</option>
+                    <option value="hi">हिंदी</option>
+                    <option value="ta">தமிழ்</option>
+                    <option value="te">తెలుగు</option>
+                    <option value="bn">বাংলা</option>
+                    <option value="mr">मराठी</option>
+                    <option value="gu">ગુજરાતી</option>
+                    <option value="kn">ಕನ್ನಡ</option>
+                    <option value="ml">മലയാളം</option>
+                    <option value="pa">ਪੰਜਾਬੀ</option>
+                    <option value="or">ଓଡ଼ିଆ</option>
+                    <option value="as">অসমীয়া</option>
+                </select>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <div class="back-link">
+                <a href="/" data-translate="back_home">← Back to Home</a>
+            </div>
+
+            <!-- App Introduction -->
+            <div class="app-intro enhanced-card">
+                <div class="app-hero">
+                    <div class="app-icon">📱</div>
+                    <div class="app-info">
+                        <h2 data-translate="smart_tourist_safety_app">Smart Tourist Safety App</h2>
+                        <p class="app-tagline" data-translate="app_tagline">Your personal safety companion for worry-free travel</p>
+                        <div class="app-stats">
+                            <div class="stat-item">
+                                <div class="stat-number">4.8★</div>
+                                <div class="stat-label" data-translate="rating">Rating</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number">50K+</div>
+                                <div class="stat-label" data-translate="downloads">Downloads</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number">Free</div>
+                                <div class="stat-label" data-translate="cost">Cost</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Download Options -->
+            <div class="download-section">
+                <h2 data-translate="download_options">📥 Download Options</h2>
+                
+                <div class="download-grid">
+                    <!-- Android Download -->
+                    <div class="download-card android-card">
+                        <div class="platform-header">
+                            <div class="platform-icon">🤖</div>
+                            <div class="platform-info">
+                                <h3>Android</h3>
+                                <p data-translate="android_requirement">Requires Android 6.0+</p>
+                            </div>
+                        </div>
+                        
+                        <div class="qr-code-section">
+                            <div class="qr-code" id="android-qr">
+                                <!-- QR Code will be generated here -->
+                                <div class="qr-placeholder">
+                                    <div class="qr-pattern"></div>
+                                    <div class="qr-text">QR Code</div>
+                                </div>
+                            </div>
+                            <p class="qr-instruction" data-translate="scan_android">Scan to download from Play Store</p>
+                        </div>
+                        
+                        <div class="download-buttons">
+                            <a href="#" class="download-btn android-btn" id="android-download">
+                                <img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" alt="Get it on Google Play" class="store-badge">
+                            </a>
+                            <button class="download-btn direct-btn" onclick="downloadAPK()" data-translate="download_apk">Download APK</button>
+                        </div>
+                    </div>
+
+                    <!-- iOS Download -->
+                    <div class="download-card ios-card">
+                        <div class="platform-header">
+                            <div class="platform-icon">🍎</div>
+                            <div class="platform-info">
+                                <h3>iOS</h3>
+                                <p data-translate="ios_requirement">Requires iOS 12.0+</p>
+                            </div>
+                        </div>
+                        
+                        <div class="qr-code-section">
+                            <div class="qr-code" id="ios-qr">
+                                <div class="qr-placeholder">
+                                    <div class="qr-pattern"></div>
+                                    <div class="qr-text">QR Code</div>
+                                </div>
+                            </div>
+                            <p class="qr-instruction" data-translate="scan_ios">Scan to download from App Store</p>
+                        </div>
+                        
+                        <div class="download-buttons">
+                            <a href="#" class="download-btn ios-btn" id="ios-download">
+                                <img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" alt="Download on the App Store" class="store-badge">
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Web App -->
+                    <div class="download-card web-card">
+                        <div class="platform-header">
+                            <div class="platform-icon">🌐</div>
+                            <div class="platform-info">
+                                <h3 data-translate="web_app">Web App</h3>
+                                <p data-translate="web_requirement">Works on any browser</p>
+                            </div>
+                        </div>
+                        
+                        <div class="qr-code-section">
+                            <div class="qr-code" id="web-qr">
+                                <div class="qr-placeholder">
+                                    <div class="qr-pattern"></div>
+                                    <div class="qr-text">QR Code</div>
+                                </div>
+                            </div>
+                            <p class="qr-instruction" data-translate="scan_web">Scan to open web app</p>
+                        </div>
+                        
+                        <div class="download-buttons">
+                            <a href="/" class="download-btn web-btn" data-translate="open_web_app">Open Web App</a>
+                            <button class="download-btn pwa-btn" onclick="installPWA()" data-translate="install_pwa">Install as App</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- App Features -->
+            <div class="features-section enhanced-card">
+                <h2 data-translate="app_features">✨ App Features</h2>
+                
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">🚨</div>
+                        <h3 data-translate="emergency_alerts">Emergency Alerts</h3>
+                        <p data-translate="emergency_alerts_desc">One-tap panic button with GPS location sharing to emergency services</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">🆔</div>
+                        <h3 data-translate="digital_id">Digital ID</h3>
+                        <p data-translate="digital_id_desc">Secure blockchain-based digital identity with tamper-proof verification</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">📍</div>
+                        <h3 data-translate="location_tracking">Location Tracking</h3>
+                        <p data-translate="location_tracking_desc">Real-time GPS tracking with geofencing for safety zones</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">🏥</div>
+                        <h3 data-translate="medical_info">Medical Information</h3>
+                        <p data-translate="medical_info_desc">Encrypted medical records accessible by emergency personnel</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">🌍</div>
+                        <h3 data-translate="multilingual">Multilingual Support</h3>
+                        <p data-translate="multilingual_desc">Available in 12 languages including all major Indian languages</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">📞</div>
+                        <h3 data-translate="emergency_contacts_feature">Emergency Contacts</h3>
+                        <p data-translate="emergency_contacts_desc">Quick access to local emergency numbers and personal contacts</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Installation Instructions -->
+            <div class="instructions-section enhanced-card">
+                <h2 data-translate="installation_instructions">📋 Installation Instructions</h2>
+                
+                <div class="instruction-tabs">
+                    <button class="tab-btn active" onclick="showInstructions('android')" data-translate="android">Android</button>
+                    <button class="tab-btn" onclick="showInstructions('ios')" data-translate="ios">iOS</button>
+                    <button class="tab-btn" onclick="showInstructions('web')" data-translate="web_app">Web App</button>
+                </div>
+                
+                <div class="instruction-content">
+                    <!-- Android Instructions -->
+                    <div class="instruction-panel active" id="android-instructions">
+                        <div class="instruction-steps">
+                            <div class="step">
+                                <div class="step-number">1</div>
+                                <div class="step-content">
+                                    <h4 data-translate="step_1_android">Download from Play Store</h4>
+                                    <p data-translate="step_1_android_desc">Tap the "Get it on Google Play" button or scan the QR code with your camera app</p>
+                                </div>
+                            </div>
+                            
+                            <div class="step">
+                                <div class="step-number">2</div>
+                                <div class="step-content">
+                                    <h4 data-translate="step_2_android">Install the App</h4>
+                                    <p data-translate="step_2_android_desc">Follow the installation prompts and grant necessary permissions</p>
+                                </div>
+                            </div>
+                            
+                            <div class="step">
+                                <div class="step-number">3</div>
+                                <div class="step-content">
+                                    <h4 data-translate="step_3_android">Register & Setup</h4>
+                                    <p data-translate="step_3_android_desc">Create your digital ID and complete the enhanced registration process</p>
+                                </div>
+                            </div>
+                            
+                            <div class="step">
+                                <div class="step-number">4</div>
+                                <div class="step-content">
+                                    <h4 data-translate="step_4_android">Enable Location</h4>
+                                    <p data-translate="step_4_android_desc">Allow location access for emergency services and safety features</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="alternative-option">
+                            <h4 data-translate="alternative_android">Alternative: Direct APK Download</h4>
+                            <p data-translate="alternative_android_desc">If you can't access Play Store, download the APK file directly. Make sure to enable "Install from unknown sources" in your settings.</p>
+                            <button class="download-btn direct-btn" onclick="downloadAPK()" data-translate="download_apk">Download APK</button>
+                        </div>
+                    </div>
+                    
+                    <!-- iOS Instructions -->
+                    <div class="instruction-panel" id="ios-instructions">
+                        <div class="instruction-steps">
+                            <div class="step">
+                                <div class="step-number">1</div>
+                                <div class="step-content">
+                                    <h4 data-translate="step_1_ios">Download from App Store</h4>
+                                    <p data-translate="step_1_ios_desc">Tap the "Download on the App Store" button or scan the QR code</p>
+                                </div>
+                            </div>
+                            
+                            <div class="step">
+                                <div class="step-number">2</div>
+                                <div class="step-content">
+                                    <h4 data-translate="step_2_ios">Install & Trust</h4>
+                                    <p data-translate="step_2_ios_desc">Install the app and trust the developer if prompted</p>
+                                </div>
+                            </div>
+                            
+                            <div class="step">
+                                <div class="step-number">3</div>
+                                <div class="step-content">
+                                    <h4 data-translate="step_3_ios">Grant Permissions</h4>
+                                    <p data-translate="step_3_ios_desc">Allow location, notification, and camera permissions for full functionality</p>
+                                </div>
+                            </div>
+                            
+                            <div class="step">
+                                <div class="step-number">4</div>
+                                <div class="step-content">
+                                    <h4 data-translate="step_4_ios">Complete Registration</h4>
+                                    <p data-translate="step_4_ios_desc">Set up your digital ID and emergency contacts</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Web App Instructions -->
+                    <div class="instruction-panel" id="web-instructions">
+                        <div class="instruction-steps">
+                            <div class="step">
+                                <div class="step-number">1</div>
+                                <div class="step-content">
+                                    <h4 data-translate="step_1_web">Open in Browser</h4>
+                                    <p data-translate="step_1_web_desc">Visit the web app URL or scan the QR code</p>
+                                </div>
+                            </div>
+                            
+                            <div class="step">
+                                <div class="step-number">2</div>
+                                <div class="step-content">
+                                    <h4 data-translate="step_2_web">Add to Home Screen</h4>
+                                    <p data-translate="step_2_web_desc">Tap the browser menu and select "Add to Home Screen" for quick access</p>
+                                </div>
+                            </div>
+                            
+                            <div class="step">
+                                <div class="step-number">3</div>
+                                <div class="step-content">
+                                    <h4 data-translate="step_3_web">Enable Notifications</h4>
+                                    <p data-translate="step_3_web_desc">Allow notifications to receive emergency alerts and updates</p>
+                                </div>
+                            </div>
+                            
+                            <div class="step">
+                                <div class="step-number">4</div>
+                                <div class="step-content">
+                                    <h4 data-translate="step_4_web">Register Account</h4>
+                                    <p data-translate="step_4_web_desc">Create your digital ID using the enhanced registration form</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Requirements -->
+            <div class="requirements-section enhanced-card">
+                <h2 data-translate="system_requirements">⚙️ System Requirements</h2>
+                
+                <div class="requirements-grid">
+                    <div class="requirement-card">
+                        <h3>🤖 Android</h3>
+                        <ul>
+                            <li data-translate="android_version">Android 6.0 (API level 23) or higher</li>
+                            <li data-translate="android_storage">50 MB free storage space</li>
+                            <li data-translate="android_ram">2 GB RAM minimum</li>
+                            <li data-translate="android_gps">GPS and internet connection</li>
+                            <li data-translate="android_camera">Camera (for QR scanning)</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="requirement-card">
+                        <h3>🍎 iOS</h3>
+                        <ul>
+                            <li data-translate="ios_version">iOS 12.0 or later</li>
+                            <li data-translate="ios_storage">50 MB free storage space</li>
+                            <li data-translate="ios_device">iPhone 6s or newer</li>
+                            <li data-translate="ios_location">Location services enabled</li>
+                            <li data-translate="ios_notifications">Push notifications enabled</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="requirement-card">
+                        <h3>🌐 Web App</h3>
+                        <ul>
+                            <li data-translate="web_browser">Modern web browser (Chrome, Safari, Firefox)</li>
+                            <li data-translate="web_javascript">JavaScript enabled</li>
+                            <li data-translate="web_internet">Stable internet connection</li>
+                            <li data-translate="web_location">Location access permitted</li>
+                            <li data-translate="web_notifications">Browser notifications enabled</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Support Section -->
+            <div class="support-section enhanced-card">
+                <h2 data-translate="support_help">🆘 Support & Help</h2>
+                
+                <div class="support-content">
+                    <div class="support-item">
+                        <div class="support-icon">📧</div>
+                        <div class="support-info">
+                            <h4 data-translate="email_support">Email Support</h4>
+                            <p>support@touristsafety.gov.in</p>
+                        </div>
+                    </div>
+                    
+                    <div class="support-item">
+                        <div class="support-icon">📞</div>
+                        <div class="support-info">
+                            <h4 data-translate="phone_support">Phone Support</h4>
+                            <p>1800-TOURIST (1800-868-7478)</p>
+                        </div>
+                    </div>
+                    
+                    <div class="support-item">
+                        <div class="support-icon">❓</div>
+                        <div class="support-info">
+                            <h4 data-translate="faq">FAQ</h4>
+                            <a href="/faq" data-translate="view_faq">View Frequently Asked Questions</a>
+                        </div>
+                    </div>
+                    
+                    <div class="support-item">
+                        <div class="support-icon">🎥</div>
+                        <div class="support-info">
+                            <h4 data-translate="video_tutorials">Video Tutorials</h4>
+                            <a href="/tutorials" data-translate="watch_tutorials">Watch How-to Videos</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='common.js') }}"></script>
+    <script src="{{ url_for('static', filename='download.js') }}"></script>
+</body>
+</html>

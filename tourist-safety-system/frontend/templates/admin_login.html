@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-translate="admin_login_title">Admin Login - Tourist Safety System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='common.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Language selection bar */
+        .language-selection-bar {
+            display: flex;
+            flex-wrap: wrap;
+
+            gap: 10px;
+            justify-content: center;
+            align-items: center;
+            margin: 10px auto 0;
+            padding: 10px;
+        }
+        .lang-btn {
+            padding: 8px 14px;
+            border: 2px solid #6f42c1;
+            border-radius: 10px;
+            background: #fff;
+            color: #6f42c1;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all .2s ease;
+            min-width: 110px;
+        }
+        .lang-btn:hover { background: #6f42c1; color: #fff; }
+        .lang-btn.active { background: #6f42c1; color: #fff; box-shadow: 0 4px 12px rgba(111,66,193,.25); }
+        .login-container {
+            max-width: 500px;
+            margin: 50px auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        .login-header {
+            margin-bottom: 30px;
+        }
+        
+        .login-header i {
+            font-size: 4em;
+            color: #6f42c1;
+            margin-bottom: 20px;
+        }
+        
+        .login-header h1 {
+            color: #495057;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+        
+        .login-header p {
+            color: #6c757d;
+            font-size: 1.1em;
+        }
+        
+        .login-form {
+            margin: 30px 0;
+        }
+        
+        .input-group {
+            position: relative;
+            margin-bottom: 25px;
+        }
+        
+        .input-group i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+            font-size: 1.1em;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 15px 15px 15px 45px;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        .input-group input:focus {
+            outline: none;
+            border-color: #6f42c1;
+            box-shadow: 0 0 0 3px rgba(111, 66, 193, 0.1);
+        }
+        
+        .login-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #6f42c1, #5a2d91);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 12px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+        
+        .login-btn:hover {
+            background: linear-gradient(135deg, #5a2d91, #4a1f7a);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(111, 66, 193, 0.3);
+        }
+        
+        .login-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .alternative-actions {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e9ecef;
+        }
+        
+        .alternative-actions a {
+            color: #6f42c1;
+            text-decoration: none;
+            font-weight: 500;
+            margin: 0 10px;
+            transition: color 0.3s ease;
+        }
+        
+        .alternative-actions a:hover {
+            color: #5a2d91;
+        }
+        
+        .back-link {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        
+        .back-link a {
+            color: #6c757d;
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: color 0.3s ease;
+        }
+        
+        .back-link a:hover {
+            color: #495057;
+        }
+        
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #dc3545;
+        }
+        
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #28a745;
+        }
+        
+        .loading-spinner {
+            display: none;
+            margin-right: 10px;
+        }
+        
+        .security-notice {
+            background: #fff3cd;
+            color: #856404;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #ffc107;
+            text-align: left;
+            font-size: 0.9em;
+        }
+        
+        .demo-credentials {
+            background: #d1ecf1;
+            color: #0c5460;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #17a2b8;
+            text-align: left;
+            font-size: 0.9em;
+        }
+        
+        .demo-credentials strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Language selection buttons -->
+        <div class="language-selection-bar" aria-label="Select Language">
+            <button type="button" class="lang-btn" id="lang-en" onclick="translateToLanguage('en')">English</button>
+            <button type="button" class="lang-btn" id="lang-hi" onclick="translateToLanguage('hi')">हिंदी</button>
+            <button type="button" class="lang-btn" id="lang-te" onclick="translateToLanguage('te')">తెలుగు</button>
+            <button type="button" class="lang-btn" id="lang-ta" onclick="translateToLanguage('ta')">தமிழ்</button>
+            <button type="button" class="lang-btn" id="lang-bn" onclick="translateToLanguage('bn')">বাংলা</button>
+            <button type="button" class="lang-btn" id="lang-mr" onclick="translateToLanguage('mr')">मराठी</button>
+            <button type="button" class="lang-btn" id="lang-gu" onclick="translateToLanguage('gu')">ગુજરાતી</button>
+            <button type="button" class="lang-btn" id="lang-kn" onclick="translateToLanguage('kn')">ಕನ್ನಡ</button>
+            <button type="button" class="lang-btn" id="lang-ml" onclick="translateToLanguage('ml')">മലയാളം</button>
+            <button type="button" class="lang-btn" id="lang-pa" onclick="translateToLanguage('pa')">ਪੰਜਾਬੀ</button>
+            <button type="button" class="lang-btn" id="lang-or" onclick="translateToLanguage('or')">ଓଡ଼ିଆ</button>
+            <button type="button" class="lang-btn" id="lang-as" onclick="translateToLanguage('as')">অসমীয়া</button>
+        </div>
+        <div class="back-link">
+            <a href="/">
+                <i class="fas fa-arrow-left"></i>
+                <span data-translate="back_home">← Back to Home</span>
+            </a>
+        </div>
+
+        <div class="login-container">
+            <div class="login-header">
+                <i class="fas fa-user-shield"></i>
+                <h1 data-translate="admin_login_title">Admin Login</h1>
+                <p data-translate="admin_login_desc">Secure access to administrative dashboard</p>
+            </div>
+
+            <div class="security-notice">
+                <i class="fas fa-lock"></i>
+                <strong>Security Notice:</strong> Admin access is restricted. Only authorized personnel should attempt to login.
+            </div>
+
+            <div class="authority-notice">
+                <i class="fas fa-shield-alt"></i>
+                <strong>Authority Admin Access</strong><br>
+                <span style="color: #dc3545;">Credentials provided by Tourism Authority only</span>
+            </div>
+
+            <div class="demo-credentials" style="background: #e3f2fd; border-left: 4px solid #2196f3;">
+                <i class="fas fa-key"></i>
+                <strong>Demo Credentials:</strong><br>
+                <strong>Username:</strong> admin<br>
+                <strong>Password:</strong> AdminPass123!
+            </div>
+
+            <div id="message"></div>
+
+            <form class="login-form" id="loginForm">
+                <div class="input-group">
+                    <i class="fas fa-user"></i>
+                    <input type="text" id="admin_id" name="admin_id" 
+                           placeholder="Enter Username" 
+                           data-translate-placeholder="admin_username_placeholder" required>
+                </div>
+
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="password" name="password" 
+                           placeholder="Enter Password" 
+                           data-translate-placeholder="password_placeholder" required>
+                </div>
+
+                <button type="submit" class="login-btn" id="loginBtn">
+                    <span class="loading-spinner"><i class="fas fa-spinner fa-spin"></i></span>
+                    <span data-translate="admin_login_btn">Admin Login</span>
+                </button>
+            </form>
+
+            <div class="alternative-actions">
+                <p style="color: #6c757d; margin-bottom: 15px;" data-translate="not_admin">Not an admin?</p>
+                <a href="/user_login" data-translate="user_login">User Login</a>
+                <span style="color: #dee2e6;">|</span>
+                <a href="/login" data-translate="tourist_login">Tourist Login</a>
+                <span style="color: #dee2e6;">|</span>
+                <a href="/enhanced_registration" data-translate="register_tourist">Register as Tourist</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Emergency Modal -->
+    <div id="emergencyModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close" onclick="closeEmergencyModal()">&times;</span>
+            <h2><i class="fas fa-exclamation-triangle"></i> <span data-translate="emergency_services">Emergency Services</span></h2>
+            <div class="emergency-grid">
+                <a href="tel:100" class="emergency-contact">
+                    <i class="fas fa-shield-alt"></i>
+                    <span data-translate="police">Police</span>
+                    <strong>100</strong>
+                </a>
+                <a href="tel:102" class="emergency-contact">
+                    <i class="fas fa-ambulance"></i>
+                    <span data-translate="ambulance">Ambulance</span>
+                    <strong>102</strong>
+                </a>
+                <a href="tel:101" class="emergency-contact">
+                    <i class="fas fa-fire"></i>
+                    <span data-translate="fire">Fire Service</span>
+                    <strong>101</strong>
+                </a>
+                <a href="tel:1363" class="emergency-contact">
+                    <i class="fas fa-map-marked-alt"></i>
+                    <span data-translate="tourist_helpline">Tourist Helpline</span>
+                    <strong>1363</strong>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='common.js') }}"></script>
+    <script src="{{ url_for('static', filename='global-translation.js') }}"></script>
+    <script src="{{ url_for('static', filename='translation.js') }}"></script>
+    <script>
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeTranslations();
+            // Set active language button state
+            setTimeout(() => {
+                const lang = (window.globalTranslationManager && window.globalTranslationManager.currentLanguage) || (window.currentLanguage || 'en');
+                document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+                const activeBtn = document.getElementById('lang-' + lang);
+                if (activeBtn) activeBtn.classList.add('active');
+            }, 200);
+        });
+
+        // Initialize translations
+        async function initializeTranslations() {
+            try {
+                await loadTranslations();
+            } catch (error) {
+                console.error('Error initializing translations:', error);
+            }
+        }
+
+        // Handle login form submission
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const admin_id = document.getElementById('admin_id').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const loginBtn = document.getElementById('loginBtn');
+            const spinner = document.querySelector('.loading-spinner');
+            const messageDiv = document.getElementById('message');
+            
+            if (!admin_id || !password) {
+                showMessage('Please enter both Username and password', 'error');
+                return;
+            }
+            
+            // Show loading state
+            loginBtn.disabled = true;
+            spinner.style.display = 'inline-block';
+            messageDiv.innerHTML = '';
+            
+            try {
+                const response = await apiRequest('/api/auth/admin/login', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        username: admin_id,
+                        password: password
+                    })
+                });
+                // Try to parse JSON; fall back to text body for clearer error messages
+                let data;
+                try {
+                    data = await response.clone().json();
+                } catch (e) {
+                    const txt = await response.text();
+                    data = { success: false, error: txt && txt.length < 500 ? txt : 'Unexpected server response' };
+                }
+                
+                if (response.ok && data.success) {
+                    showMessage(`${data.message} - Welcome ${data.admin.full_name}`, 'success');
+                    setTimeout(() => {
+                        window.location.href = '/admin';
+                    }, 1500);
+                } else {
+                    showMessage(data.error || 'Admin authentication failed', 'error');
+                }
+                
+            } catch (error) {
+                console.error('Admin login error:', error);
+                showMessage('Network error. Please check your connection and try again.', 'error');
+            } finally {
+                loginBtn.disabled = false;
+                spinner.style.display = 'none';
+            }
+        });
+
+        // Show message function
+        function showMessage(message, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.innerHTML = `<div class="${type}-message">${message}</div>`;
+        }
+
+        // Emergency modal functions
+        function showEmergencyModal() {
+            document.getElementById('emergencyModal').style.display = 'block';
+        }
+
+        function closeEmergencyModal() {
+            document.getElementById('emergencyModal').style.display = 'none';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('emergencyModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
