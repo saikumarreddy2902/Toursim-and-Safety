@@ -1508,6 +1508,81 @@ def get_sos_status(sos_id: str):  # type: ignore
             'error': str(e)
         }), 500
 
+@app.route('/api/emergency/sos/live-location/<sos_id>', methods=['GET'])
+def get_sos_live_location(sos_id: str):  # type: ignore
+    """Get live location tracking for an active SOS alert."""
+    try:
+        from mongo_db import get_sos_by_id  # type: ignore
+        
+        # Get SOS alert details
+        sos_data = get_sos_by_id(sos_id)
+        
+        if not sos_data:
+            return jsonify({
+                'success': False,
+                'error': 'SOS alert not found'
+            }), 404
+        
+        tourist_id = sos_data.get('tourist_id')
+        if not tourist_id:
+            return jsonify({
+                'success': False,
+                'error': 'Tourist ID not found in SOS alert'
+            }), 400
+        
+        # Get most recent location for this tourist
+        if not mongo_enabled():
+            return jsonify({'success': False, 'error': 'MongoDB not enabled'}), 503
+            
+        docs = get_recent_locations(tourist_id, limit=1)
+        
+        if not docs:
+            # Return SOS initial location if no tracking data
+            return jsonify({
+                'success': True,
+                'sos_id': sos_id,
+                'tourist_id': tourist_id,
+                'location': {
+                    'latitude': sos_data.get('location_lat'),
+                    'longitude': sos_data.get('location_lng'),
+                    'accuracy': sos_data.get('location_accuracy'),
+                    'timestamp': sos_data.get('timestamp'),
+                    'source': 'sos_initial'
+                },
+                'status': sos_data.get('status', 'ACTIVE')
+            })
+        
+        # Return latest tracked location
+        doc = docs[0]
+        return jsonify({
+            'success': True,
+            'sos_id': sos_id,
+            'tourist_id': tourist_id,
+            'location': {
+                'latitude': doc.get('latitude'),
+                'longitude': doc.get('longitude'),
+                'accuracy': doc.get('accuracy'),
+                'altitude': doc.get('altitude'),
+                'speed': doc.get('speed'),
+                'heading': doc.get('heading'),
+                'timestamp': doc.get('timestamp'),
+                'battery_level': doc.get('battery_level'),
+                'location_method': doc.get('location_method', 'gps'),
+                'is_inside_safe_zone': doc.get('is_inside_safe_zone'),
+                'is_inside_restricted_zone': doc.get('is_inside_restricted_zone'),
+                'source': 'live_tracking'
+            },
+            'status': sos_data.get('status', 'ACTIVE'),
+            'sos_timestamp': sos_data.get('timestamp')
+        })
+        
+    except Exception as e:  # type: ignore
+        print(f"Error getting SOS live location: {e}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
 @app.route('/api/emergency/notifications', methods=['GET'])
 def get_admin_notifications() -> Union[Response, tuple[Response, int]]:
     """Get admin notifications for SOS requests"""

@@ -2568,6 +2568,131 @@
             }
         }
 
+        // ============= LIVE LOCATION TRACKING FOR SOS =============
+        let sosLiveLocationInterval = null;
+        let activeSosAlerts = new Set();
+
+        function startLiveLocationTracking() {
+            // Clear any existing interval
+            if (sosLiveLocationInterval) {
+                clearInterval(sosLiveLocationInterval);
+            }
+
+            // Update live locations every 15 seconds
+            sosLiveLocationInterval = setInterval(async () => {
+                await updateLiveLocations();
+            }, 15000); // 15 seconds
+
+            console.log('🔴 Started live location tracking for active SOS alerts');
+        }
+
+        function stopLiveLocationTracking() {
+            if (sosLiveLocationInterval) {
+                clearInterval(sosLiveLocationInterval);
+                sosLiveLocationInterval = null;
+                console.log('🟢 Stopped live location tracking');
+            }
+        }
+
+        async function updateLiveLocations() {
+            try {
+                // Get all active SOS alerts
+                const response = await apiRequest('/api/admin/sos-alerts');
+                const data = await response.json();
+                
+                if (!data.success || !data.sos_alerts) return;
+
+                // Filter for active SOS alerts
+                const activeAlerts = data.sos_alerts.filter(alert => 
+                    alert.status && !alert.status.toUpperCase().includes('RESOLVE')
+                );
+
+                // Update each active SOS with live location
+                for (const alert of activeAlerts) {
+                    await updateSOSLiveLocation(alert.sos_id);
+                }
+
+                // If there are active alerts, refresh the map
+                if (activeAlerts.length > 0 && emergencyMap) {
+                    await updateEmergencyMap();
+                }
+            } catch (error) {
+                console.error('Error updating live locations:', error);
+            }
+        }
+
+        async function updateSOSLiveLocation(sosId) {
+            try {
+                const response = await fetch(`/api/emergency/sos/live-location/${sosId}`);
+                const data = await response.json();
+                
+                if (data.success && data.location) {
+                    // Update marker on map if it exists
+                    updateMarkerLocation(sosId, data.location);
+                    
+                    // Log location update
+                    console.log(`📍 Updated location for ${sosId}:`, 
+                        data.location.latitude, 
+                        data.location.longitude,
+                        `(Source: ${data.location.source})`
+                    );
+                }
+            } catch (error) {
+                console.error(`Error fetching live location for ${sosId}:`, error);
+            }
+        }
+
+        function updateMarkerLocation(sosId, location) {
+            if (!emergencyMap || !location.latitude || !location.longitude) return;
+
+            // Find existing marker
+            const existingMarkerIndex = mapMarkers.findIndex(m => m.sosId === sosId);
+            
+            if (existingMarkerIndex !== -1) {
+                // Update existing marker position
+                const marker = mapMarkers[existingMarkerIndex].marker;
+                const newLatLng = L.latLng(location.latitude, location.longitude);
+                marker.setLatLng(newLatLng);
+                
+                // Update popup content with new timestamp
+                const sourceIcon = location.source === 'live_tracking' ? '🔴' : '📍';
+                const timestamp = new Date(location.timestamp).toLocaleTimeString();
+                
+                marker.setPopupContent(`
+                    <div style="min-width: 200px;">
+                        <strong style="color: #dc3545; font-size: 1.1em;">⚠️ SOS Alert</strong><br>
+                        <strong>ID:</strong> ${sosId}<br>
+                        ${sourceIcon} <strong>Live Location</strong><br>
+                        <strong>Updated:</strong> ${timestamp}<br>
+                        ${location.accuracy ? `<strong>Accuracy:</strong> ${location.accuracy.toFixed(0)}m<br>` : ''}
+                        ${location.speed ? `<strong>Speed:</strong> ${location.speed.toFixed(1)} m/s<br>` : ''}
+                        ${location.battery_level ? `<strong>Battery:</strong> ${location.battery_level}%<br>` : ''}
+                    </div>
+                `);
+                
+                // Flash the marker to indicate update
+                flashMarker(marker);
+            }
+        }
+
+        function flashMarker(marker) {
+            // Create a pulsing effect on marker update
+            const originalIcon = marker.options.icon;
+            let flashCount = 0;
+            const flashInterval = setInterval(() => {
+                if (flashCount % 2 === 0) {
+                    marker.setOpacity(0.5);
+                } else {
+                    marker.setOpacity(1.0);
+                }
+                flashCount++;
+                if (flashCount >= 4) {
+                    clearInterval(flashInterval);
+                    marker.setOpacity(1.0);
+                }
+            }, 200);
+        }
+
         // ============= Emergency Risk Map Functions =============
         let emergencyMap = null;
         let mapMarkers = [];
@@ -2603,7 +2728,11 @@
                 const alerts = data.sos_alerts || [];
                 
                 // Clear existing markers
-                mapMarkers.forEach(marker => emergencyMap.removeLayer(marker));
+                mapMarkers.forEach(item => {
+                    if (item.marker) {
+                        emergencyMap.removeLayer(item.marker);
+                    }
+                });
                 mapMarkers = [];
 
                 // Track statistics
@@ -2673,6 +2802,10 @@
                                 </span>
                             </p>
                             <p style="margin: 10px 0 5px 0;"><strong>Location:</strong> ${lat.toFixed(6)}, ${lng.toFixed(6)}</p>
+                            <p style="margin: 5px 0; color: #666; font-size: 12px;">
+                                <i class="fas fa-circle" style="color: ${status !== 'RESOLVED' ? '#ff4444' : '#28a745'}; animation: ${status !== 'RESOLVED' ? 'blink 1s infinite' : 'none'};"></i>
+                                ${status !== 'RESOLVED' ? '🔴 Live Tracking Active' : '✅ Resolved'}
+                            </p>
                             
                             <div style="display: grid; gap: 8px; margin-top: 10px;">
                                 <button onclick="window.open('https://www.google.com/maps?q=${lat},${lng}', '_blank')" style="
@@ -2722,7 +2855,12 @@
                         showToast('Opening location in Google Maps...', 'info', 2000);
                     });
                     
-                    mapMarkers.push(marker);
+                    // Store marker with SOS ID for live tracking updates
+                    mapMarkers.push({
+                        marker: marker,
+                        sosId: alert.sos_id,
+                        status: status
+                    });
                     bounds.push([lat, lng]);
                 });
 
@@ -2750,7 +2888,17 @@
                     emergencyMap.fitBounds(bounds, { padding: [50, 50] });
                 }
 
-                console.log(`✅ Updated map with ${alerts.length} alerts`);
+                // Start live location tracking if there are active alerts
+                if (activeCount > 0 || progressCount > 0) {
+                    if (!sosLiveLocationInterval) {
+                        startLiveLocationTracking();
+                    }
+                } else {
+                    // Stop tracking if no active alerts
+                    stopLiveLocationTracking();
+                }
+
+                console.log(`✅ Updated map with ${alerts.length} alerts (${activeCount} active, live tracking: ${sosLiveLocationInterval ? 'ON' : 'OFF'})`);
             } catch (error) {
                 console.error('Error updating emergency map:', error);
             }

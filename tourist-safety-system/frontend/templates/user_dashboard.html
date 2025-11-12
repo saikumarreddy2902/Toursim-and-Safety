@@ -3647,9 +3647,13 @@
                     // Store SOS ID for status checking
                     if (data.sos_id) {
                         localStorage.setItem('lastSOSId', data.sos_id);
+                        localStorage.setItem('sosActive', 'true');
+                        
+                        // Start continuous location tracking for SOS
+                        startSOSLocationTracking(data.sos_id);
                     }
                     
-                    alert('🚨 EMERGENCY SOS SENT SUCCESSFULLY!\n\nSOS ID: ' + data.sos_id + '\n\n✅ Authorities have been notified\n✅ Your location has been shared\n✅ Help is on the way\n\nYou can check response status from your dashboard.\n\nStay calm and stay safe.');
+                    alert('🚨 EMERGENCY SOS SENT SUCCESSFULLY!\n\nSOS ID: ' + data.sos_id + '\n\n✅ Authorities have been notified\n✅ Your location has been shared\n✅ Help is on the way\n✅ Live location tracking activated\n\nYou can check response status from your dashboard.\n\nStay calm and stay safe.');
                     
                     // Show check status button
                     showSOSStatusButton(data.sos_id);
@@ -3673,6 +3677,146 @@
                 btn.innerHTML = '🚨 EMERGENCY SOS 🚨';
                 alert('❌ Failed to send SOS due to network error.\n\nPlease call emergency services directly:\n📞 Emergency Number: 911 or local emergency services');
             });
+        }
+
+        // Global variable to track location interval
+        let sosLocationTrackingInterval = null;
+
+        function startSOSLocationTracking(sosId) {
+            // Clear any existing interval
+            if (sosLocationTrackingInterval) {
+                clearInterval(sosLocationTrackingInterval);
+            }
+
+            console.log('🔴 Starting SOS location tracking for:', sosId);
+
+            // Send location immediately
+            sendLocationUpdate();
+
+            // Send location every 10 seconds while SOS is active
+            sosLocationTrackingInterval = setInterval(() => {
+                // Check if SOS is still active
+                const sosActive = localStorage.getItem('sosActive');
+                if (sosActive !== 'true') {
+                    console.log('SOS no longer active, stopping location tracking');
+                    stopSOSLocationTracking();
+                    return;
+                }
+
+                sendLocationUpdate();
+            }, 10000); // Update every 10 seconds
+
+            // Also add visual indicator
+            showLocationTrackingIndicator();
+        }
+
+        function stopSOSLocationTracking() {
+            if (sosLocationTrackingInterval) {
+                clearInterval(sosLocationTrackingInterval);
+                sosLocationTrackingInterval = null;
+                console.log('🟢 Stopped SOS location tracking');
+            }
+            hideLocationTrackingIndicator();
+        }
+
+        function sendLocationUpdate() {
+            if (!currentUser || !currentUser.user_id) {
+                console.warn('No user logged in, cannot send location');
+                return;
+            }
+
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const locationData = {
+                            tourist_id: currentUser.user_id,
+                            latitude: position.coords.latitude,
+                            longitude: position.coords.longitude,
+                            accuracy: position.coords.accuracy,
+                            altitude: position.coords.altitude || 0,
+                            speed: position.coords.speed || 0,
+                            heading: position.coords.heading || 0,
+                            location_method: 'gps'
+                        };
+
+                        fetch('/api/location/track', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(locationData)
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                console.log('📍 Location update sent:', position.coords.latitude, position.coords.longitude);
+                            }
+                        })
+                        .catch(error => console.error('Error sending location:', error));
+                    },
+                    (error) => {
+                        console.error('Geolocation error:', error);
+                    },
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 5000,
+                        maximumAge: 0
+                    }
+                );
+            }
+        }
+
+        function showLocationTrackingIndicator() {
+            let indicator = document.getElementById('sosLocationIndicator');
+            
+            if (!indicator) {
+                indicator = document.createElement('div');
+                indicator.id = 'sosLocationIndicator';
+                indicator.style.cssText = `
+                    position: fixed;
+                    bottom: 20px;
+                    right: 20px;
+                    background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+                    color: white;
+                    padding: 12px 20px;
+                    border-radius: 25px;
+                    box-shadow: 0 4px 15px rgba(255, 65, 108, 0.4);
+                    z-index: 10000;
+                    font-weight: bold;
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    animation: pulse 2s infinite;
+                `;
+                indicator.innerHTML = `
+                    <span style="width: 10px; height: 10px; background: white; border-radius: 50%; display: inline-block; animation: blink 1s infinite;"></span>
+                    <span>📍 Live Location Tracking Active</span>
+                    <button onclick="stopSOSLocationTracking(); localStorage.setItem('sosActive', 'false');" style="background: rgba(255,255,255,0.3); border: none; color: white; padding: 5px 10px; border-radius: 15px; cursor: pointer; font-size: 12px;">Stop</button>
+                `;
+                document.body.appendChild(indicator);
+
+                // Add CSS animations
+                if (!document.getElementById('sosLocationIndicatorStyles')) {
+                    const style = document.createElement('style');
+                    style.id = 'sosLocationIndicatorStyles';
+                    style.innerHTML = `
+                        @keyframes pulse {
+                            0%, 100% { transform: scale(1); }
+                            50% { transform: scale(1.05); }
+                        }
+                        @keyframes blink {
+                            0%, 100% { opacity: 1; }
+                            50% { opacity: 0.3; }
+                        }
+                    `;
+                    document.head.appendChild(style);
+                }
+            }
+        }
+
+        function hideLocationTrackingIndicator() {
+            const indicator = document.getElementById('sosLocationIndicator');
+            if (indicator) {
+                indicator.remove();
+            }
         }
 
         function showSOSStatusButton(sosId) {
