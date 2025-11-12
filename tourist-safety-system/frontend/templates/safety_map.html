@@ -326,8 +326,8 @@
             fetch('/api/zones/safe')
                 .then(response => response.json())
                 .then(data => {
-                    if (data.success && data.zones) {
-                        data.zones.forEach(zone => {
+                    if (data.success && data.safe_zones) {
+                        data.safe_zones.forEach(zone => {
                             const circle = L.circle([zone.center_lat, zone.center_lng], {
                                 color: '#00b894',
                                 fillColor: '#00b894',
@@ -335,7 +335,7 @@
                                 radius: zone.radius_meters || 1000
                             }).addTo(map);
 
-                            circle.bindPopup(`<strong>🛡️ Safe Zone</strong><br>${zone.name || 'Safe Area'}`);
+                            circle.bindPopup(`<strong>🛡️ Safe Zone</strong><br>${zone.zone_name || zone.name || 'Safe Area'}`);
                             safeZones.push(circle);
                         });
                     }
@@ -346,8 +346,8 @@
             fetch('/api/zones/restricted')
                 .then(response => response.json())
                 .then(data => {
-                    if (data.success && data.zones) {
-                        data.zones.forEach(zone => {
+                    if (data.success && data.restricted_zones) {
+                        data.restricted_zones.forEach(zone => {
                             const circle = L.circle([zone.center_lat, zone.center_lng], {
                                 color: '#d63031',
                                 fillColor: '#d63031',
@@ -355,7 +355,7 @@
                                 radius: zone.radius_meters || 1000
                             }).addTo(map);
 
-                            circle.bindPopup(`<strong>⚠️ Restricted Zone</strong><br>${zone.name || 'Avoid This Area'}<br><small>${zone.reason || ''}</small>`);
+                            circle.bindPopup(`<strong>⚠️ Restricted Zone</strong><br>${zone.zone_name || zone.name || 'Avoid This Area'}<br><small>${zone.reason || ''}</small>`);
                             restrictedZones.push(circle);
                         });
                     }
