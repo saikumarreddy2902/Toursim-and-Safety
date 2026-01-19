@@ -26,7 +26,7 @@ simplejson==3.19.2
 python-dotenv==1.0.0
 
 # CORS Support
-Flask-CORS==4.0.0
+Flask-CORS==6.0.0
 
 # Rate Limiting
 Flask-Limiter==3.5.0
