@@ -1461,7 +1461,7 @@ def handle_sos_request():  # type: ignore
             'success': True,
             'sos_id': sos_id,
             'message': 'SOS request received and processed',
-            'admin_notified': not mongo_enabled(),
+            'admin_notified': True,  # Admin notification is always created when MongoDB is enabled
             'incident_response_triggered': incident_response_triggered,
             'tracking_url': f"/api/incident/track/{sos_id}" if incident_response_triggered else None,
             'emergency_numbers': {

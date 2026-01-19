@@ -54,6 +54,7 @@ class Repository:
 
     # ---------- User Retrieval ----------
     def get_user_by_username_or_email(self, identifier: str) -> Optional[Dict[str, Any]]:
+        self._ensure_mongo()
         identifier = identifier.strip().lower()
         doc = _mongo_get_user_for_login(identifier)
         if doc:
@@ -62,6 +63,7 @@ class Repository:
 
     # ---------- Admin Retrieval ----------
     def get_admin_by_username_or_email(self, identifier: str) -> Optional[Dict[str, Any]]:
+        self._ensure_mongo()
         identifier = identifier.strip().lower()
         doc = _mongo_get_admin_for_login(identifier)
         if doc:
